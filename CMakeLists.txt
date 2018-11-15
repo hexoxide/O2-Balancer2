@@ -17,16 +17,23 @@ use_cxx11()
 use_cxx_warning_pedantic()
 
 # Required packages 
+find_package(ZeroMQ REQUIRED)
 find_package(FairMQ REQUIRED)
+find_package(FairLogger REQUIRED)
 find_package(Zookeeper REQUIRED)
 
 # Include Commonly required headers
+include_directories(${ZeroMQ_INCLUDE_DIR})
 include_directories(${FairMQ_INCDIR}) # INCDIR Triggered
+include_directories(${FairLogger_INCLUDE_DIR})
 include_directories(${ZOOKEEPER_INCLUDE_DIR})
 
 # Set Commonly required libraries
 set(O2_Balancer2_LIBRARIES
-	${FairMQ_LIBDIR} # LIBDIR Triggered
+	${ZeroMQ_LIBRARY}
+	${ZOOKEEPER_LIBRARIES}
+	FairLogger
+	FairMQ
 )
 
 # Commonly shared library
