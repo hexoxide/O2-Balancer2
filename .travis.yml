@@ -1,0 +1,43 @@
+dist: xenial
+language: cpp
+compiler: gcc
+required: sudo
+env:
+  global:
+    - TRAVIS=true
+    - DEPENDENCY_URL=https://github.com/hexoxide/raspberry-dependency.git
+addons:
+  apt:
+    packages:
+      - git
+      - ant
+      - lcov
+      - wget
+      - htop
+      - make
+      - libtool
+      - doxygen
+      - automake
+      - autoconf
+      - zookeeper
+      - python-dev
+      - icu-devtools
+      - libcppunit-dev
+      - libzookeeper-mt-dev
+before_install:
+  - git clone $DEPENDENCY_URL depdendency
+  - cd depdendency
+  - git checkout O2v2
+  - git submodule update --init --recursive
+  - ./install-dependencies.sh
+script: 
+  - if [ ! -d "build" ]; then mkdir build; fi
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=Debug ..
+  - make -j 2
+after_success:
+  - cd ${TRAVIS_BUILD_DIR}/build
+  - lcov --directory . --capture --output-file coverage.info # capture coverage info
+  - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+  - lcov --list coverage.info #debug info
+  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
