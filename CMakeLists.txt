@@ -16,6 +16,9 @@ use_cxx11()
 # Enable pedantic errors and warnings for c++
 use_cxx_warning_pedantic()
 
+# Configurable options and defaults
+OPTION(ENABLE_TESTS "Enable unit tests" ON)
+
 # Required packages 
 find_package(ZeroMQ REQUIRED)
 find_package(FairMQ REQUIRED)
