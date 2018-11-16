@@ -7,11 +7,11 @@
 
 #include "libo2.h"
 
-BOOST_AUTO_TEST_SUITE(Test_Get)
+BOOST_AUTO_TEST_SUITE(Test_Example)
 
-BOOST_AUTO_TEST_CASE(TestGet) {
+BOOST_AUTO_TEST_CASE(TestExample) {
 	LibO2 test("My Milkshake draws all the bois to the yard.");
-	BOOST_CHECK(sizeof(test) > 1);
+	BOOST_CHECK(sizeof(test) > 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
