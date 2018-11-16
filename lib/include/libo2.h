@@ -2,6 +2,7 @@
 #define LIBO2
 
 #include <string>
+#include <iostream>
 
 class LibO2 {
 public:
