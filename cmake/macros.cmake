@@ -28,8 +28,7 @@ macro(use_cxx_warning_pedantic)
 		endif()
 	elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 		# Update if necessary
-		
 		message("Found GCC enabling pedantic")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic")
 	endif()
 endmacro(use_cxx_warning_pedantic)
