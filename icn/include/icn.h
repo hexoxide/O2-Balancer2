@@ -14,7 +14,8 @@ class InformationControlNode : public FairMQDevice
     virtual ~InformationControlNode();
 
   protected:
-    std::string fText;
+  	char* text;
+    uint64_t fTextSize;
     uint64_t fMaxIterations;
     uint64_t fNumIterations;
 

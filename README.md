@@ -22,7 +22,7 @@ make -j 2
 ## Running
 
 ```bash
-./icn/icn --severity trace --verbosity veryhigh --id 1 --channel-config name=data,type=push,method=bind,address=tcp://*:5555,rateLogging=1
+./icn/icn --severity trace --verbosity veryhigh --id 1 --rate 50 --bytes-per-message 2097152 --channel-config name=data,type=push,method=bind,address=tcp://*:5555,rateLogging=1
 ./flp/flp --severity trace --verbosity veryhigh --id 1 --channel-config name=data,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1
 ```
 
