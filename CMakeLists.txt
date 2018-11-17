@@ -50,10 +50,10 @@ include_directories(${ZOOKEEPER_INCLUDE_DIR})
 # Set Commonly required libraries
 set(O2_Balancer2_LIBRARIES
 	${Boost_SYSTEM_LIBRARY}
-    ${Boost_LOG_LIBRARY}
-    ${Boost_LOG_SETUP_LIBRARY}
-    ${Boost_PROGRAM_OPTIONS_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
+	${Boost_LOG_LIBRARY}
+	${Boost_LOG_SETUP_LIBRARY}
+	${Boost_PROGRAM_OPTIONS_LIBRARY}
+	${Boost_THREAD_LIBRARY}
 	${ZeroMQ_LIBRARY}
 	${ZOOKEEPER_LIBRARIES}
 	FairLogger
@@ -75,7 +75,8 @@ add_subdirectory(flp)
 if(ENABLE_CODECOV)
 	# Add CodeCoverage
 	include(CodeCoverage)
-	setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
+	setup_target_for_coverage(${PROJECT_NAME}_coverage testexample coverage)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -00 fprofile-arcs -ftest-coverage")
 	set(ENABLE_TESTS ON) # tests need to be enabled for code coverage
 endif()
 
