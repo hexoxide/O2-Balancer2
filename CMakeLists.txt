@@ -73,10 +73,10 @@ add_subdirectory(epn)
 add_subdirectory(flp)
 
 if(ENABLE_CODECOV)
-	# Add CodeCoverage
+	message("Running CodeCoverage, forcing ENABLE_TESTS...")
 	include(CodeCoverage)
 	setup_target_for_coverage(${PROJECT_NAME}_coverage testexample coverage)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -00 fprofile-arcs -ftest-coverage")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -00 -fprofile-arcs -ftest-coverage")
 	set(ENABLE_TESTS ON) # tests need to be enabled for code coverage
 endif()
 
