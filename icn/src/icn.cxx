@@ -3,7 +3,7 @@
 using namespace std;
 
 InformationControlNode::InformationControlNode()
-    : fText()
+    : fTextSize(0)
     , fMaxIterations(0)
     , fNumIterations(0)
 {
@@ -12,25 +12,28 @@ InformationControlNode::InformationControlNode()
 void InformationControlNode::InitTask()
 {
     // Get the fText and fMaxIterations values from the command line options (via fConfig)
-    fText = fConfig->GetValue<string>("text");
+    fTextSize = fConfig->GetValue<uint64_t>("bytes-per-message");
     fMaxIterations = fConfig->GetValue<uint64_t>("max-iterations");
+
+    text = new char[fTextSize];
+
+    for(uint64_t i = 0; i < fTextSize; i++) {
+        text[i] = 'a';
+    }
 }
 
 bool InformationControlNode::ConditionalRun()
 {
-    // create a copy of the data with new(), that will be deleted after the transfer is complete
-    string* text = new string(fText);
-
     // create message object with a pointer to the data buffer,
     // its size,
     // custom deletion function (called when transfer is done),
     // and pointer to the object managing the data buffer
-    FairMQMessagePtr msg(NewMessage(const_cast<char*>(text->c_str()),
-                                    text->length(),
-                                    [](void* /*data*/, void* object) { delete static_cast<string*>(object); },
+    FairMQMessagePtr msg(NewMessage(text,
+                                    fTextSize,
+                                    [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */},
                                     text));
 
-    LOG(info) << "Sending \"" << fText << "\"";
+    // LOG(info) << "Sending \"" << text << "\"";
 
     // in case of error or transfer interruption, return false to go to IDLE state
     // successfull transfer will return number of bytes transfered (can be 0 if sending an empty message).
@@ -49,4 +52,5 @@ bool InformationControlNode::ConditionalRun()
 
 InformationControlNode::~InformationControlNode()
 {
+    delete static_cast<char*>(text);
 }
