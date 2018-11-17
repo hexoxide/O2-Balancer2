@@ -18,6 +18,7 @@ use_cxx_warning_pedantic()
 
 # Configurable options and defaults
 OPTION(ENABLE_TESTS "Enable unit tests" ON)
+OPTION(ENABLE_CODECOV "Measure code coverage" OFF)
 
 # Required packages 
 find_package(ZeroMQ REQUIRED)
@@ -71,8 +72,15 @@ add_subdirectory(epn)
 # First Line Processing binary
 add_subdirectory(flp)
 
+if(ENABLE_CODECOV)
+	# Add CodeCoverage
+	include(CodeCoverage)
+	setup_target_for_coverage(${PROJECT_NAME}_coverage tests coverage)
+	set(ENABLE_TESTS ON) # tests need to be enabled for code coverage
+endif()
+
 # Unit tests to validate application
-IF(ENABLE_TESTS)
+if(ENABLE_TESTS)
 	ENABLE_TESTING()
 	add_subdirectory(tests)
-ENDIF()
+endif()

@@ -8,11 +8,11 @@ find_package(
     REQUIRED
 )
 
-set(TEST_EXAMPLE_RESTCLI_SOURCE 
+set(TEST_EXAMPLE_SOURCE 
 	src/test-example.cxx
 )
 
-add_executable(testexample ${TEST_EXAMPLE_RESTCLI_SOURCE})
+add_executable(testexample ${TEST_EXAMPLE_SOURCE})
 
 target_link_libraries(
 	testexample
