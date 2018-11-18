@@ -2,35 +2,53 @@
 
 using namespace std;
 
-FirstLineProccessor::FirstLineProccessor()
-    : fMaxIterations(0)
+FirstLineProccessing::FirstLineProccessing()
+    : fTextSize(0)
+    , fMaxIterations(0)
     , fNumIterations(0)
 {
-    // register a handler for data arriving on "data" channel
-    OnData("data", &FirstLineProccessor::HandleData);
 }
 
-void FirstLineProccessor::InitTask()
+void FirstLineProccessing::InitTask()
 {
-    // Get the fMaxIterations value from the command line options (via fConfig)
+    // Get the fText and fMaxIterations values from the command line options (via fConfig)
+    fTextSize = fConfig->GetValue<uint64_t>("bytes-per-message");
     fMaxIterations = fConfig->GetValue<uint64_t>("max-iterations");
+    text = new char[fTextSize];
+    for(uint64_t i = 0; i < fTextSize; i++) {
+        text[i] = 'a';
+    }
 }
 
-// handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool FirstLineProccessor::HandleData(FairMQMessagePtr& msg, int /*index*/)
+bool FirstLineProccessing::ConditionalRun()
 {
-    // LOG(info) << "Received: \"" << string(static_cast<char*>(msg->GetData()), msg->GetSize()) << "\"";
+    // create message object with a pointer to the data buffer,
+    // its size,
+    // custom deletion function (called when transfer is done),
+    // and pointer to the object managing the data buffer
+    FairMQMessagePtr msg(NewMessage(text,
+                                    fTextSize,
+                                    [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */},
+                                    text));
 
-    if (fMaxIterations > 0 && ++fNumIterations >= fMaxIterations)
+    // LOG(info) << "Sending \"" << text << "\"";
+
+    // in case of error or transfer interruption, return false to go to IDLE state
+    // successfull transfer will return number of bytes transfered (can be 0 if sending an empty message).
+    if (Send(msg, "data") < 0)
+    {
+        return false;
+    }
+    else if (fMaxIterations > 0 && ++fNumIterations >= fMaxIterations)
     {
         LOG(info) << "Configured maximum number of iterations reached. Leaving RUNNING state.";
         return false;
     }
 
-    // return true if want to be called again (otherwise return false go to IDLE state)
     return true;
 }
 
-FirstLineProccessor::~FirstLineProccessor()
+FirstLineProccessing::~FirstLineProccessing()
 {
+    delete static_cast<char*>(text);
 }

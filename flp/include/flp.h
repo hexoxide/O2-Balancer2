@@ -1,21 +1,26 @@
 #ifndef FLP_H
 #define FLP_H
 
+#include <thread>
+#include <chrono>
+#include <string>
+
 #include "FairMQDevice.h"
 
-class FirstLineProccessor : public FairMQDevice
+class FirstLineProccessing : public FairMQDevice
 {
   public:
-    FirstLineProccessor();
-    virtual ~FirstLineProccessor();
+    FirstLineProccessing();
+    virtual ~FirstLineProccessing();
 
   protected:
-    virtual void InitTask();
-    bool HandleData(FairMQMessagePtr&, int);
-
-  private:
+  	char* text;
+    uint64_t fTextSize;
     uint64_t fMaxIterations;
     uint64_t fNumIterations;
+
+    void InitTask() override;
+    bool ConditionalRun() override;
 };
 
 #endif /* FLP_H */
