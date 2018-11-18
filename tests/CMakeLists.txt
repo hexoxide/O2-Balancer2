@@ -12,6 +12,7 @@ set(TEST_EXAMPLE_SOURCE
 	src/test-example.cxx
 )
 
+message("O2B2: testexample cxx flags: ${CMAKE_CXX_FLAGS}")
 add_executable(testexample ${TEST_EXAMPLE_SOURCE})
 
 target_link_libraries(

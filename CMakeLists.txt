@@ -20,24 +20,24 @@ use_cxx_warning_pedantic()
 OPTION(ENABLE_TESTS "Enable unit tests" ON)
 OPTION(ENABLE_CODECOV "Measure code coverage" OFF)
 
-# Required packages 
+# Required packages
 find_package(ZeroMQ REQUIRED)
 find_package(FairMQ REQUIRED)
 find_package(FairLogger REQUIRED)
 find_package(Zookeeper REQUIRED)
 FIND_PACKAGE(
-    Boost 1.59 COMPONENTS 
-    system 
-    timer 
-    program_options 
-    filesystem 
-    chrono 
-    exception 
-    serialization 
-    log 
-    log_setup 
-    unit_test_framework 
-    date_time 
+    Boost 1.59 COMPONENTS
+    system
+    timer
+    program_options
+    filesystem
+    chrono
+    exception
+    serialization
+    log
+    log_setup
+    unit_test_framework
+    date_time
     REQUIRED
 )
 
@@ -60,6 +60,20 @@ set(O2_Balancer2_LIBRARIES
 	FairMQ
 )
 
+if(ENABLE_CODECOV)
+	message("O2B2: Running CodeCoverage, forcing ENABLE_TESTS & CMAKE_BUILD_TYPE=Debug")
+	include(CodeCoverage)
+	setup_target_for_coverage(coverage testexample coverage)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+	set(ENABLE_TESTS ON) # tests need to be enabled for code coverage
+	set(CMAKE_BUILD_TYPE Debug) # debug needed to disable compilter optimization
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	message("O2B2: Disabling gcc optimization & adding extensive debug symbols")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+endif()
+
 # Commonly shared library
 add_subdirectory(lib)
 
@@ -72,16 +86,9 @@ add_subdirectory(epn)
 # First Line Processing binary
 add_subdirectory(flp)
 
-if(ENABLE_CODECOV)
-	message("Running CodeCoverage, forcing ENABLE_TESTS...")
-	include(CodeCoverage)
-	setup_target_for_coverage(${PROJECT_NAME}_coverage testexample coverage)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -00 -fprofile-arcs -ftest-coverage")
-	set(ENABLE_TESTS ON) # tests need to be enabled for code coverage
-endif()
-
 # Unit tests to validate application
 if(ENABLE_TESTS)
+	message("O2B2: Enabling tests")
 	ENABLE_TESTING()
 	add_subdirectory(tests)
 endif()
