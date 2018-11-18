@@ -14,8 +14,6 @@ class EventProccessingNode : public FairMQDevice
     bool HandleData(FairMQMessagePtr&, int);
 
   private:
-    uint64_t fMaxIterations;
-    uint64_t fNumIterations;
 };
 
 #endif /* EPN_H */

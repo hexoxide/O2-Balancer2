@@ -22,8 +22,9 @@ make -j 2
 ## Running
 
 ```bash
-./flp/flp --severity trace --verbosity veryhigh --id 1 --rate 50 --bytes-per-message 2097152 --channel-config name=data,type=push,method=bind,address=tcp://*:5555,rateLogging=1
-./epn/epn --severity trace --verbosity veryhigh --id 1 --channel-config name=data,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1
+./icn/icn --severity trace --verbosity veryhigh --id 1 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=0,address=tcp://*:5005
+./flp/flp --severity trace --verbosity veryhigh --id 1 --rate 50 --bytes-per-message 2097152 --channel-config name=1,type=push,method=bind,address=tcp://*:5555,rateLogging=1 name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://localhost:5005
+./epn/epn --severity trace --verbosity veryhigh --id 1 --channel-config name=1,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1
 ```
 
 ## Debugging

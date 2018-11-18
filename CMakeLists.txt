@@ -66,12 +66,18 @@ if(ENABLE_CODECOV)
 	setup_target_for_coverage(coverage testexample coverage)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 	set(ENABLE_TESTS ON) # tests need to be enabled for code coverage
-	set(CMAKE_BUILD_TYPE Debug) # debug needed to disable compilter optimization
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		message(WARNING "Forcing buld type to Debug to allow code coverage!")
+		set(CMAKE_BUILD_TYPE Debug) # debug needed to disable compilter optimization
+	endif()
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message("O2B2: Disabling gcc optimization & adding extensive debug symbols")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+	message("O2B2: Optimization the living shit out of gcc")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast")
 endif()
 
 # Commonly shared library
