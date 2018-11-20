@@ -1,4 +1,4 @@
-![https://travis-ci.com/hexoxide/O2-Balancer2](https://api.travis-ci.com/hexoxide/O2-Balancer2.svg?branch=master)
+[![travis](https://api.travis-ci.com/hexoxide/O2-Balancer2.svg?branch=master)](https://travis-ci.com/hexoxide/O2-Balancer2) [![codecov](https://codecov.io/gh/hexoxide/O2-Balancer2/branch/master/graph/badge.svg)](https://codecov.io/gh/hexoxide/O2-Balancer2)
 
 # Load balancer V2 for ALICE
 In collaboration with the Amsterdam University of Applied sciences and CERN a load balancer is being developed for the ALICE O2 project.
