@@ -10,6 +10,20 @@ The balancer is build out of three parts each with its own purposes and characte
 * FLP
 * EPN
 
+## Dependencies
+
+```bash
+git clone https://github.com/hexoxide/raspberry-dependency.git
+cd raspberry-dependency
+git checkout O2v2
+su root
+apt update
+apt upgrade
+apt install sudo gcc git wget htop make icu-devtools python python-dev ant libcppunit-dev 
+apt install doxygen automake autoconf libtool zookeeper libzookeeper-mt-dev
+./install-dependencies.sh
+```
+
 ## Installation
 
 ```bash
@@ -22,9 +36,9 @@ make -j 2
 ## Running
 
 ```bash
-./icn/icn --severity trace --verbosity veryhigh --id 1 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=0,address=tcp://*:5005
+./icn/icn --severity trace --verbosity veryhigh --id 1 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=1,address=tcp://*:5005 name=feedback,type=pull,method=bind,rateLogging=1,address=tcp://*:5000
 ./flp/flp --severity trace --verbosity veryhigh --id 1 --rate 50 --bytes-per-message 2097152 --channel-config name=1,type=push,method=bind,address=tcp://*:5555,rateLogging=1 name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://localhost:5005
-./epn/epn --severity trace --verbosity veryhigh --id 1 --channel-config name=1,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1
+./epn/epn --severity trace --verbosity veryhigh --id 1 --channel-config name=1,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=push,method=connect,address=tcp://localhost:5000
 ```
 
 ## Debugging

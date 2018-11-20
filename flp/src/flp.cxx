@@ -4,7 +4,7 @@ using namespace std;
 
 FirstLineProccessing::FirstLineProccessing()
     : fTextSize(0)
-    , currentChannel("1")
+    , fCurrentChannel("1")
 {
     OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
 }
@@ -12,18 +12,15 @@ FirstLineProccessing::FirstLineProccessing()
 bool FirstLineProccessing::HandleBroadcast(FairMQMessagePtr& msg, int /*index*/)
 {
     // LOG(info) << "Received broadcast: \"" << string(static_cast<char*>(msg->GetData()), msg->GetSize()) << "\"";
-    currentChannel = string(static_cast<char*>(msg->GetData()),msg->GetSize());
+    fCurrentChannel = string(static_cast<char*>(msg->GetData()),msg->GetSize());
 
     FairMQMessagePtr msgsend(NewMessage(text,
                                     fTextSize,
                                     [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */},
                                     text));
 
-    LOG(info) << currentChannel << "\"";
-    if (Send(msgsend, currentChannel) < 0)
-    {
-        return false;
-    }
+    // LOG(info) << fCurrentChannel << "\"";
+    Send(msgsend, fCurrentChannel, 0, 0); // send async
     return true;
 }
 
@@ -52,7 +49,7 @@ void FirstLineProccessing::InitTask()
 
 //     // in case of error or transfer interruption, return false to go to IDLE state
 //     // successfull transfer will return number of bytes transfered (can be 0 if sending an empty message).
-//     if (Send(msg, currentChannel) < 0)
+//     if (Send(msg, fCurrentChannel) < 0)
 //     {
 //         return false;
 //     }

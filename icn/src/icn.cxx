@@ -1,5 +1,7 @@
 #include "icn.h"
 
+#include "FairMQPoller.h"
+
 using namespace std;
 
 InformationControlNode::InformationControlNode()
@@ -8,23 +10,31 @@ InformationControlNode::InformationControlNode()
 
 void InformationControlNode::InitTask()
 {
+	poller = FairMQPollerPtr(NewPoller("broadcast", "feedback"));
+	poller->Poll(fConfig->GetValue<float>("rate"));
 }
 
 bool InformationControlNode::ConditionalRun()
 {
-    // create message object with a pointer to the data buffer,
-    // its size,
-    // custom deletion function (called when transfer is done),
-    // and pointer to the object managing the data buffer
-    FairMQMessagePtr msg(NewSimpleMessage("1"));
+	if (poller->CheckInput("feedback", 0)) {
 
-    // in case of error or transfer interruption, return false to go to IDLE state
-    // successfull transfer will return number of bytes transfered (can be 0 if sending an empty message).
-    if (Send(msg, "broadcast") < 0)
-    {
-        return false;
-    }
-    return true;
+	}
+
+	if (poller->CheckOutput("broadcast", 0)) {
+		// Create a message containing
+	    FairMQMessagePtr msg(NewSimpleMessage("1"));
+
+	    // in case of error or transfer interruption, return false to go to IDLE state
+	    // successfull transfer will return number of bytes transfered (can be 0 if sending an empty message).
+	    Send(msg, "broadcast");
+	}
+
+	return true;
+}
+
+void InformationControlNode::PostRun()
+{
+	ChangeState(RUNNING);
 }
 
 InformationControlNode::~InformationControlNode()

@@ -15,8 +15,9 @@ class FirstLineProccessing : public FairMQDevice
 
   protected:
   	char* text;
+    
     uint64_t fTextSize;
-    std::string currentChannel;
+    std::string fCurrentChannel;
 
     bool HandleBroadcast(FairMQMessagePtr&, int);
 

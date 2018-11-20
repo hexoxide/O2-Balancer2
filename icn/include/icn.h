@@ -16,6 +16,9 @@ class InformationControlNode : public FairMQDevice
   protected:
     void InitTask() override;
     bool ConditionalRun() override;
+    void PostRun() override;
+
+    FairMQPollerPtr poller;
 };
 
 #endif /* ICN_H */
