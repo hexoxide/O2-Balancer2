@@ -21,11 +21,14 @@ OPTION(ENABLE_TESTS "Enable unit tests" ON)
 OPTION(ENABLE_CODECOV "Measure code coverage" OFF)
 
 # Required packages
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(FairMQ REQUIRED)
 find_package(FairLogger REQUIRED)
 find_package(Zookeeper REQUIRED)
-FIND_PACKAGE(
+find_package(
     Boost 1.59 COMPONENTS
     system
     timer
@@ -49,11 +52,13 @@ include_directories(${ZOOKEEPER_INCLUDE_DIR})
 
 # Set Commonly required libraries
 set(O2_Balancer2_LIBRARIES
-	${Boost_SYSTEM_LIBRARY}
+	Threads::Threads
+	Boost::boost
+	Boost::system
+	Boost::program_options
+  	Boost::thread
 	${Boost_LOG_LIBRARY}
 	${Boost_LOG_SETUP_LIBRARY}
-	${Boost_PROGRAM_OPTIONS_LIBRARY}
-	${Boost_THREAD_LIBRARY}
 	${ZeroMQ_LIBRARY}
 	${ZOOKEEPER_LIBRARIES}
 	FairLogger

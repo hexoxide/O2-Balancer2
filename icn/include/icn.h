@@ -15,10 +15,15 @@ class InformationControlNode : public FairMQDevice
 
   protected:
     void InitTask() override;
+    void PreRun() override;
     bool ConditionalRun() override;
     void PostRun() override;
 
-    FairMQPollerPtr poller;
+    void ListenForFeedback();
+
+    std::thread fFeedbackListener;
+
+    //FairMQPollerPtr poller;
 };
 
 #endif /* ICN_H */
