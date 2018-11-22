@@ -50,8 +50,19 @@ make -j 2
 ```
 
 ## Debugging
-Start individual applications of the O2 balancer using gdb and be sure to pipe the output to a file or null.
+Start individual applications of the O2 balancer using gdb and be sure to pipe the output to a file or null. Be sure that the binaries are compiled with gcc `-g -O0` arguments by setting the cmake `DCMAKE_BUILD_TYPE` to `Debug`.
+
 ```bash
-gdb -tui FILE
-run > output.log
+gdb -tui PATH_TO_BINARY
+run ARGUMENTS > output.log
+```
+
+## Working on serialization
+
+```
+OFI::libfabric protobuf::libprotobuf $<TARGET_OBJECTS:OfiTransport>
+
+CMAKE:
+  find_package2(PRIVATE OFI VERSION 1.6.0 REQUIRED COMPONENTS fi_sockets fi_verbs)
+  find_package2(PRIVATE Protobuf VERSION 3.4.0 REQUIRED)
 ```

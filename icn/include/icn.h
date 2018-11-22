@@ -22,8 +22,7 @@ class InformationControlNode : public FairMQDevice
     void ListenForFeedback();
 
     std::thread fFeedbackListener;
-
-    //FairMQPollerPtr poller;
+    uint64_t fNumHeartbeat;
 };
 
 #endif /* ICN_H */

@@ -17,11 +17,14 @@ class FirstLineProccessing : public FairMQDevice
   	char* text;
     
     uint64_t fTextSize;
-    std::string fCurrentChannel;
 
-    bool HandleBroadcast(FairMQMessagePtr&, int);
+    uint64_t lastHeartbeat;
+    std::string currentChannel;
+
+    bool HandleBroadcast(FairMQParts&, int);
 
     void InitTask() override;
+    void PostRun() override;
     // bool ConditionalRun() override;
 };
 

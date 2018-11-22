@@ -5,12 +5,12 @@
 #include <iostream>
 #include <string>
 
-#include "libo2.h"
+#include "o2data.h"
 
 BOOST_AUTO_TEST_SUITE(Test_Example)
 
 BOOST_AUTO_TEST_CASE(TestExample) {
-	LibO2 test("My Milkshake draws all the bois to the yard.");
+	O2Data test = O2Data();
 	BOOST_CHECK(sizeof(test) > 0);
 }
 
