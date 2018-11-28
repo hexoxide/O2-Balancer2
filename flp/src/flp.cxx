@@ -19,7 +19,9 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
     bool isConfiguring = false;
     O2Data* data;
 
+    LOG(error) << "broadcast";
     for (const auto& part : msg) {
+        // First part should always be of O2Data 
         if(isFirst) 
         {
             isFirst = false;
@@ -33,6 +35,7 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
             continue;
         }
         
+        // Add channels to device based on O2Channel message part data
         if(isConfiguring)
         {
             O2Channel* data2 = static_cast<O2Channel*>(part->GetData());
@@ -46,6 +49,8 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
             AddChannel(name, channel);
         }
     }
+
+    // Device re-initialization to configure new channels
     if(isConfiguring) {
         bool reInit = false;
         const std::string hook("hook");
@@ -87,6 +92,8 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
         });
         return false;
     }
+    // end of reconfigure
+
     FairMQMessagePtr msgsend(NewMessage(text,
                                     fTextSize,
                                     [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
