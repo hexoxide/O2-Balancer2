@@ -1,13 +1,13 @@
 #include "icn.h"
 
 #include "o2data.h"
-#include "o2channel.h"
 
 using namespace std;
 
 InformationControlNode::InformationControlNode()
 	: fFeedbackListener()
 	, fNumHeartbeat(0)
+	, channels()
 	, isConfigure(true)
 {
 }
@@ -26,21 +26,26 @@ bool InformationControlNode::ConditionalRun()
 	fNumHeartbeat++;
 	FairMQParts parts;
 
+	// Send an intial dummy packet to setup all pub-sub connections
 	if(isConfigure) {
-		LOG(error) << "FirstPacket";
+		LOG(trace) << "Setting up broadcast channel";
 		FairMQParts firstParts;
 		O2Data* firstPacket = new O2Data();
 		firstPacket->heartbeat = fNumHeartbeat;
-		firstPacket->tarChannel = 1;
+		firstPacket->tarChannel = 0;
 		firstPacket->configure = false;
 		void* dataFirst = firstPacket;
     	firstParts.AddPart(NewMessage(dataFirst, 
     					sizeof(O2Data),
 						[](void* /*data*/, void* object) { delete static_cast<O2Data*>(object); },
                         firstPacket));
-    	Send(firstParts, "broadcast");
+    	Send(firstParts, "broadcast", 0, 0); // Send the packet asynchronously
+    	LOG(trace) << "Waiting for FLP's to register on broadcast channel";
+    	std::this_thread::sleep_for(std::chrono::seconds(10)); // Wait 10 seconds to ensure all pub-sub channels are setup
+    	LOG(trace) << "FLP's should have registered?";
     }
 
+    // First part of message should always be of type O2Data
 	O2Data* s1 = new O2Data();
 	s1->heartbeat = fNumHeartbeat;
 	s1->tarChannel = 1; // selected channel for flp's to transmit on
@@ -55,11 +60,15 @@ bool InformationControlNode::ConditionalRun()
 	    for (uint8_t i = 1; i < 5 /*UINT8_MAX*/; i++) {
 		    O2Channel* s2 = new O2Channel();
 			s2->index = i;
-			s2->ip1 = 192;
-			s2->ip2 = 168;
+			//s2->ip1 = 192;
+			//s2->ip2 = 168;
+			//s2->ip3 = 0;
+			//s2->ip4 = i;
+			s2->ip1 = 127;
+			s2->ip2 = 0;
 			s2->ip3 = 0;
-			s2->ip4 = i;
-			s2->port = 5000 + i;
+			s2->ip4 = 1;
+			s2->port = 5555;
 			void* data2 = s2;
 		    parts.AddPart(NewMessage(data2, 
 		    						sizeof(O2Channel),
@@ -72,17 +81,20 @@ bool InformationControlNode::ConditionalRun()
 
     // only the first packet should configure the flp
     isConfigure = false;
-    LOG(error) << "isConfigure false";
 
 	return true;
 }
 
 void InformationControlNode::PostRun()
 {
-	LOG(info) << "Heartsbeats	" << fNumHeartbeat;
+	LOG(trace) << "Heartsbeats	" << fNumHeartbeat;
 	fFeedbackListener.join();
 }
 
+/**
+ * Count the number of feedbacks from EPN's 
+ * this can be used to determine the number of lost heartbeats
+ */
 void InformationControlNode::ListenForFeedback()
 {
     uint64_t numAcks = 0;
@@ -95,7 +107,7 @@ void InformationControlNode::ListenForFeedback()
         }
         ++numAcks;
     }
-    LOG(info) << "Acknowledgements	" << numAcks;
+    LOG(trace) << "Acknowledgements	" << numAcks;
 }
 
 InformationControlNode::~InformationControlNode()

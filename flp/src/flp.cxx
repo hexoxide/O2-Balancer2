@@ -7,6 +7,10 @@ using namespace std;
 
 FirstLineProccessing::FirstLineProccessing()
     : fTextSize(0)
+    , text(nullptr)
+    , isReconfiguringChannels(false)
+    , isReinitializing(false)
+    , currentReconfigureStep(0)
     , lastHeartbeat(0)
     , currentChannel("1")
 {
@@ -15,35 +19,33 @@ FirstLineProccessing::FirstLineProccessing()
 
 bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
 {
-    bool isFirst = true;
-    bool isConfiguring = false;
+    bool isFirstMessagePart = true;
     O2Data* data;
 
-    LOG(error) << "broadcast";
+    // Iterate through all message parts
     for (const auto& part : msg) {
         // First part should always be of O2Data 
-        if(isFirst) 
+        if(isFirstMessagePart) 
         {
-            isFirst = false;
+            isFirstMessagePart = false;
             data = static_cast<O2Data*>(part->GetData());
-            LOG(ERROR) << "First";
             if(data->configure) 
             {
-                isConfiguring = true;
-                LOG(ERROR) << "Configuring";
+                isReconfiguringChannels = true;
+                LOG(trace) << "Configuring";
             }
             continue;
         }
         
         // Add channels to device based on O2Channel message part data
-        if(isConfiguring)
+        if(isReconfiguringChannels)
         {
             O2Channel* data2 = static_cast<O2Channel*>(part->GetData());
             string name = to_string(data2->index);
             string ip = to_string(data2->ip1) + "." + to_string(data2->ip2) + "." + to_string(data2->ip3) + "." + to_string(data2->ip4);
             string port = to_string(data2->port);
             FairMQChannel channel("push", "connect", "tcp://" + ip + ":" + to_string(data2->port));
-            LOG(ERROR) << "Configure packet:" << name << " - " << ip << ":" << port;
+            LOG(trace) << "Configure packet:" << name << " - " << ip << ":" << port;
             channel.UpdateRateLogging(1);
             channel.ValidateChannel();
             AddChannel(name, channel);
@@ -51,41 +53,52 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
     }
 
     // Device re-initialization to configure new channels
-    if(isConfiguring) {
-        bool reInit = false;
+    if(isReconfiguringChannels) {
+        isReinitializing = false;
+        currentReconfigureStep = 1;
         const std::string hook("hook");
         SubscribeToStateChange(hook, [&](const State curState){
             // Step 1
-            if(!reInit) {
-                if(curState == READY) 
+            if(!isReinitializing) {
+                LOG(trace) << "Breaking down";
+                if(curState == READY && currentReconfigureStep == 1) 
                 {
-                    LOG(ERROR) << "DOWN step 1 - Current state is ready";
+                    currentReconfigureStep = 2;
+                    LOG(trace) << "DOWN step 1 - Current state is ready";
                     ChangeState("RESET_TASK");
+                    // WaitForEndOfStateForMs("RESET_TASK", 1);
                 }
                 // Step 2
-                if(curState == DEVICE_READY)
+                if(curState == DEVICE_READY && currentReconfigureStep == 2)
                 {
-                    LOG(ERROR) << "DOWN step 2 - Current state is device ready";
+                    currentReconfigureStep = 3;
+                    LOG(trace) << "DOWN step 2 - Current state is device ready";
                     ChangeState("RESET_DEVICE");
+                    //WaitForEndOfStateForMs("RESET_DEVICE", 1);
                 }
                 // Step 3
-                if(curState == IDLE)
+                if(curState == IDLE && currentReconfigureStep == 3)
                 {
-                    LOG(ERROR) << "DOWN step 3 - Current state is idle";
-                    reInit = true;
+                    currentReconfigureStep = 4;
+                    LOG(trace) << "DOWN step 3 - Current state is idle";
+                    isReinitializing = true;
                     ChangeState("INIT_DEVICE");
+                    // WaitForEndOfStateForMs("INIT_DEVICE", 1);
                 }
             }
             else {
+                LOG(trace) << "Building up";
                 // step 4
-                if(curState == DEVICE_READY) {
-                    LOG(ERROR) << "UP step 4 - Current state is device ready";
-                    reInit = true;
+                if(curState == DEVICE_READY && currentReconfigureStep == 4) {
+                    currentReconfigureStep = 5;
+                    LOG(trace) << "UP step 4 - Current state is device ready";
                     ChangeState("INIT_TASK");
+                    // WaitForEndOfStateForMs("INIT_TASK", 1);
                 }
                 // step 5
-                if(curState == READY) {
-                    LOG(ERROR) << "UP step 5 - Current state is ready";
+                if(curState == READY && currentReconfigureStep == 5) {
+                    currentReconfigureStep = 6;
+                    LOG(trace) << "UP step 5 - Current state is ready";
                     ChangeState("RUN");
                 }
             }
@@ -105,41 +118,29 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
 
 void FirstLineProccessing::InitTask()
 {
-    // Get the fText and fMaxIterations values from the command line options (via fConfig)
+    if(text != nullptr) delete static_cast<char*>(text);
     fTextSize = fConfig->GetValue<uint64_t>("bytes-per-message");
+    LOG(trace) << "Create message of size " << to_string(fTextSize);
     text = new char[fTextSize];
     for(uint64_t i = 0; i < fTextSize; i++) {
         text[i] = 'a';
     }
-    UnsubscribeFromStateChange("hook");
 }
 
-void FirstLineProccessing::PostRun()
+void FirstLineProccessing::PreRun()
 {
-    // ChangeState("RESET_TASK");
+    if(isReconfiguringChannels) {
+        isReconfiguringChannels = false;
+        UnsubscribeFromStateChange("hook");
+        //WaitForEndOfState("INIT_TASK");
+        //ChangeState("RUN");
+    }
 }
 
 // bool FirstLineProccessing::ConditionalRun()
 // {
-//     // create message object with a pointer to the data buffer,
-//     // its size,
-//     // custom deletion function (called when transfer is done),
-//     // and pointer to the object managing the data buffer
-//     FairMQMessagePtr msg(NewMessage(text,
-//                                     fTextSize,
-//                                     [](void* /*data*/, void* object) { delete static_cast<char*>(object); },
-//                                     text));
-
-//     // LOG(info) << "Sending \"" << text << "\"";
-
-//     // in case of error or transfer interruption, return false to go to IDLE state
-//     // successfull transfer will return number of bytes transfered (can be 0 if sending an empty message).
-//     if (Send(msg, currentChannel) < 0)
-//     {
-//         return false;
-//     }
-
-//     return true;
+//     //UnsubscribeFromStateChange("hook");
+//     return false;
 // }
 
 FirstLineProccessing::~FirstLineProccessing()

@@ -10,12 +10,13 @@ class EventProccessingNode : public FairMQDevice
     virtual ~EventProccessingNode();
 
   protected:
+  	virtual void InitTask();
+
+	bool HandleData(FairMQMessagePtr&, int);
+
   	uint64_t fNumFlp;
+  	
   	uint64_t receivedMessages;
-
-    virtual void InitTask();
-
-    bool HandleData(FairMQMessagePtr&, int);
 
   private:
 };

@@ -1,11 +1,16 @@
 #ifndef ICN_H
 #define ICN_H
 
+// Standard library
 #include <thread>
 #include <chrono>
 #include <string>
 
+// Dependencies
 #include "FairMQDevice.h"
+
+// Local
+#include "o2channel.h"
 
 class InformationControlNode : public FairMQDevice
 {
@@ -23,6 +28,8 @@ class InformationControlNode : public FairMQDevice
 
     std::thread fFeedbackListener;
     uint64_t fNumHeartbeat;
+
+    std::vector<O2Channel> channels;
     bool isConfigure;
 };
 

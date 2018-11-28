@@ -14,18 +14,21 @@ class FirstLineProccessing : public FairMQDevice
     virtual ~FirstLineProccessing();
 
   protected:
-  	char* text;
-    
-    uint64_t fTextSize;
-
-    uint64_t lastHeartbeat;
-    std::string currentChannel;
+    void InitTask() override;
+    void PreRun() override;
+    //bool ConditionalRun() override;
 
     bool HandleBroadcast(FairMQParts&, int);
 
-    void InitTask() override;
-    void PostRun() override;
-    // bool ConditionalRun() override;
+    uint64_t fTextSize;
+
+    // TODO AliceO2 coding guidelines unique pointer
+  	char* text;
+    std::atomic<bool> isReconfiguringChannels;
+    std::atomic<bool> isReinitializing;
+    std::atomic<uint8_t> currentReconfigureStep;
+    uint64_t lastHeartbeat;
+    std::string currentChannel;
 };
 
 #endif /* FLP_H */

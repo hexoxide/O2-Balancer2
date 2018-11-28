@@ -36,9 +36,9 @@ make -j 2
 ## Running
 
 ```bash
-./icn/icn --severity trace --verbosity high --id 1 --rate 50 --channel-config name=broadcast,type=push,method=bind,rateLogging=1,address=tcp://*:5005 name=feedback,type=sub,method=bind,rateLogging=1,address=tcp://*:5000
-./flp/flp --severity trace --verbosity high --id 1 --rate 50 --bytes-per-message 2097152 --channel-config name=1,type=push,method=bind,address=tcp://*:5555,rateLogging=1 name=broadcast,type=pull,method=connect,rateLogging=1,address=tcp://localhost:5005
-./epn/epn --severity trace --verbosity high --id 1 --num-flp 10 --channel-config name=1,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=pub,method=connect,address=tcp://localhost:5000
+./icn/icn --severity trace --verbosity high --id 1 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=1,address=tcp://*:5005 name=feedback,type=pull,method=bind,rateLogging=1,address=tcp://*:5000
+./flp/flp --severity trace --verbosity high --id 1 --bytes-per-message 2097152 --channel-config name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://localhost:5005
+./epn/epn --severity trace --verbosity high --id 1 --num-flp 10 --channel-config name=1,type=pull,method=bind,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=push,method=connect,address=tcp://localhost:5000
 ```
 
 **Old method - Commit 718d37202da12e1100ba4493af8391f7c105b911**
