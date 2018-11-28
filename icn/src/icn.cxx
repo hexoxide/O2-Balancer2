@@ -1,5 +1,6 @@
 #include "icn.h"
 
+#include <random>
 #include "o2data.h"
 
 using namespace std;
@@ -48,7 +49,10 @@ bool InformationControlNode::ConditionalRun()
     // First part of message should always be of type O2Data
 	O2Data* s1 = new O2Data();
 	s1->heartbeat = fNumHeartbeat;
-	s1->tarChannel = 1; // selected channel for flp's to transmit on
+	mt19937 rng;
+    rng.seed(random_device()());
+    uniform_int_distribution<mt19937::result_type> dist4(1,4);
+	s1->tarChannel = dist4(rng); // selected channel for flp's to transmit on
 	s1->configure = isConfigure; // if the packet is configuring the flp channels
 	void* data1 = s1;
     parts.AddPart(NewMessage(data1, 

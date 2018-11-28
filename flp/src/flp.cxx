@@ -8,6 +8,7 @@ using namespace std;
 FirstLineProccessing::FirstLineProccessing()
     : fTextSize(0)
     , text(nullptr)
+    , stateChangeHook("hook")
     , isReconfiguringChannels(false)
     , isReinitializing(false)
     , currentReconfigureStep(0)
@@ -29,6 +30,7 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
         {
             isFirstMessagePart = false;
             data = static_cast<O2Data*>(part->GetData());
+            currentChannel = to_string(data->tarChannel);
             if(data->configure) 
             {
                 isReconfiguringChannels = true;
@@ -56,8 +58,7 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
     if(isReconfiguringChannels) {
         isReinitializing = false;
         currentReconfigureStep = 1;
-        const std::string hook("hook");
-        SubscribeToStateChange(hook, [&](const State curState){
+        SubscribeToStateChange(stateChangeHook, [&](const State curState){
             // Step 1
             if(!isReinitializing) {
                 LOG(trace) << "Breaking down";
@@ -131,7 +132,7 @@ void FirstLineProccessing::PreRun()
 {
     if(isReconfiguringChannels) {
         isReconfiguringChannels = false;
-        UnsubscribeFromStateChange("hook");
+        UnsubscribeFromStateChange(stateChangeHook);
         //WaitForEndOfState("INIT_TASK");
         //ChangeState("RUN");
     }

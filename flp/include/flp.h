@@ -16,7 +16,6 @@ class FirstLineProccessing : public FairMQDevice
   protected:
     void InitTask() override;
     void PreRun() override;
-    //bool ConditionalRun() override;
 
     bool HandleBroadcast(FairMQParts&, int);
 
@@ -24,9 +23,13 @@ class FirstLineProccessing : public FairMQDevice
 
     // TODO AliceO2 coding guidelines unique pointer
   	char* text;
+    
+    // used to reinitialize channels
+    const std::string stateChangeHook;
     std::atomic<bool> isReconfiguringChannels;
     std::atomic<bool> isReinitializing;
     std::atomic<uint8_t> currentReconfigureStep;
+
     uint64_t lastHeartbeat;
     std::string currentChannel;
 };
