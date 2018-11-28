@@ -6,25 +6,27 @@
 using namespace std;
 
 InformationControlNode::InformationControlNode()
-	: fFeedbackListener()
-	, fNumHeartbeat(0)
+	: fIterations(0)
+	, numHeartbeat(0)
+	, feedbackListener()
 	, channels()
 	, isConfigure(true)
+	, startTime()
 {
 }
 
 void InformationControlNode::InitTask()
 {
+	fIterations = fConfig->GetValue<uint64_t>("iterations");
 }
 
 void InformationControlNode::PreRun()
 {
-	fFeedbackListener = thread(&InformationControlNode::ListenForFeedback, this);
+	feedbackListener = thread(&InformationControlNode::ListenForFeedback, this);
 }
 
 bool InformationControlNode::ConditionalRun()
 {
-	fNumHeartbeat++;
 	FairMQParts parts;
 
 	// Send an intial dummy packet to setup all pub-sub connections
@@ -32,7 +34,7 @@ bool InformationControlNode::ConditionalRun()
 		LOG(trace) << "Setting up broadcast channel";
 		FairMQParts firstParts;
 		O2Data* firstPacket = new O2Data();
-		firstPacket->heartbeat = fNumHeartbeat;
+		firstPacket->heartbeat = numHeartbeat;
 		firstPacket->tarChannel = 0;
 		firstPacket->configure = false;
 		void* dataFirst = firstPacket;
@@ -42,16 +44,16 @@ bool InformationControlNode::ConditionalRun()
                         firstPacket));
     	Send(firstParts, "broadcast", 0, 0); // Send the packet asynchronously
     	LOG(trace) << "Waiting for FLP's to register on broadcast channel";
-    	std::this_thread::sleep_for(std::chrono::seconds(10)); // Wait 10 seconds to ensure all pub-sub channels are setup
+    	this_thread::sleep_for(chrono::seconds(10)); // Wait 10 seconds to ensure all pub-sub channels are setup
     	LOG(trace) << "FLP's should have registered?";
     }
 
     // First part of message should always be of type O2Data
 	O2Data* s1 = new O2Data();
-	s1->heartbeat = fNumHeartbeat;
+	s1->heartbeat = numHeartbeat;
 	mt19937 rng;
     rng.seed(random_device()());
-    uniform_int_distribution<mt19937::result_type> dist4(1,4);
+    uniform_int_distribution<mt19937::result_type> dist4(1,1);
 	s1->tarChannel = dist4(rng); // selected channel for flp's to transmit on
 	s1->configure = isConfigure; // if the packet is configuring the flp channels
 	void* data1 = s1;
@@ -81,7 +83,26 @@ bool InformationControlNode::ConditionalRun()
 		}
 	}
 
-    Send(parts, "broadcast");
+	if(numHeartbeat < fIterations) 
+	{
+    	Send(parts, "broadcast", 0, 0);
+
+    	if(isConfigure)
+    	{
+    		this_thread::sleep_for(chrono::seconds(2));
+    		startTime = chrono::system_clock::now();
+    	}
+    	else {
+    		numHeartbeat++;
+    	}
+    }
+    else
+    {
+    	LOG(trace) << "Done sending packets";
+    	LOG(trace) << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
+    	this_thread::sleep_for(chrono::milliseconds(20));
+    	return false;
+    }
 
     // only the first packet should configure the flp
     isConfigure = false;
@@ -91,8 +112,8 @@ bool InformationControlNode::ConditionalRun()
 
 void InformationControlNode::PostRun()
 {
-	LOG(trace) << "Heartsbeats	" << fNumHeartbeat;
-	fFeedbackListener.join();
+	LOG(trace) << "Heartsbeats	" << numHeartbeat;
+	feedbackListener.join();
 }
 
 /**
