@@ -1,5 +1,6 @@
 #include <string.h>
 #include <errno.h>
+#include <string>
 
 #include "zookeeper/zookeeper.h"
 
@@ -49,10 +50,14 @@ int main(int argc, char* argv[]) {
   /** this operation will fail with a ZNOAUTH error */
   int buflen= sizeof(buffer);
   struct Stat stat;
-  rc = zoo_get(zh, "/xyz", 0, buffer, &buflen, &stat);
+  rc = zoo_get(zh, "/xyz0000000006", 0, buffer, &buflen, &stat);
   if (rc) {
-    fprintf(stderr, "Error %d for %s\n", rc, " ----hallootjes----");
+    fprintf(stderr, "Error %d \n", rc);
   }
+  if (rc == ZOK) {
+    std::string log = std::string(buffer, static_cast<unsigned long>(512));
+   // fprintf("%s\n", log.c_str());
+   }
 
 //  zookeeper_close(zh);
   return 0;
