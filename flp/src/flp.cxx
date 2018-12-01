@@ -108,10 +108,10 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
     }
     // end of reconfigure
 
-    FairMQMessagePtr msgsend(NewMessage(text,
+    FairMQMessagePtr msgsend(NewMessage(text.get(),
                                     fTextSize,
                                     [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                    text));
+                                    text.get()));
 
     Send(msgsend, currentChannel, 0, 0); // send async
     return true;
@@ -119,10 +119,10 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
 
 void FirstLineProccessing::InitTask()
 {
-    if(text != nullptr) delete static_cast<char*>(text);
+    //if(text != nullptr) delete static_cast<char*>(text);
     fTextSize = fConfig->GetValue<uint64_t>("bytes-per-message");
     LOG(trace) << "Create message of size " << to_string(fTextSize);
-    text = new char[fTextSize];
+    text = unique_ptr<char[]>(new char[fTextSize]);
     for(uint64_t i = 0; i < fTextSize; i++) {
         text[i] = 'a';
     }
@@ -146,5 +146,5 @@ void FirstLineProccessing::PreRun()
 
 FirstLineProccessing::~FirstLineProccessing()
 {
-    delete static_cast<char*>(text);
+    //delete static_cast<char*>(text);
 }

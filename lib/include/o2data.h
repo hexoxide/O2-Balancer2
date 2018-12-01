@@ -3,14 +3,14 @@
 
 #include <stdint.h>
 
-class O2Data {
-public:
-	O2Data();
+struct O2Data {
 	uint64_t	heartbeat;
 	uint64_t	tarChannel;
 	bool 		configure;
-protected:
-private:
+	constexpr O2Data()
+		: heartbeat(0)
+		, tarChannel(0)
+		, configure(false) {}
 };
 
 #endif // O2DATA

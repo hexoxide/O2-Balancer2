@@ -21,8 +21,7 @@ class FirstLineProccessing : public FairMQDevice
 
     uint64_t fTextSize;
 
-    // TODO AliceO2 coding guidelines unique pointer
-  	char* text;
+  	std::unique_ptr<char[]> text;
     
     // used to reinitialize channels
     const std::string stateChangeHook;
