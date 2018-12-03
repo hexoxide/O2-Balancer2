@@ -15,13 +15,19 @@ char *foo_get_cert_once(char* id) { return 0; }
 /** Watcher function -- empty for this example, not something you should
  * do in real code */
 void watcher(zhandle_t *zzh, int type, int state, const char *path,
-             void *watcherCtx) {}
+             void *watcherCtx) {
+	if (type == ZOO_CHILD_EVENT) {
+//            LOG(INFO) << boost::format("Child event happened at %s") % std::string(path);
+	    printf("child event happend at %s", std::string(path).c_str());
+        }
+}
 
 int main(int argc, char* argv[]) {
   char buffer[512];
   char p[2048];
   char *cert=0;
   char appId[64];
+  printf("starting program");
 
   strcpy(appId, "example.foo_test");
   cert = foo_get_cert_once(appId);
@@ -56,7 +62,7 @@ int main(int argc, char* argv[]) {
   }
   if (rc == ZOK) {
     std::string log = std::string(buffer, static_cast<unsigned long>(512));
-   // fprintf("%s\n", log.c_str());
+    printf("opgehaalde value: %s\n", log.c_str());
    }
 
 //  zookeeper_close(zh);
