@@ -11,15 +11,33 @@ static zhandle_t *zh;
  *   environment -- you must provide
  */
 char *foo_get_cert_once(char* id) { return 0; }
+int connected = 0;
+int expired = 0;
 
 /** Watcher function -- empty for this example, not something you should
  * do in real code */
-void watcher(zhandle_t *zzh, int type, int state, const char *path,
-             void *watcherCtx) {
-	if (type == ZOO_CHILD_EVENT) {
-//            LOG(INFO) << boost::format("Child event happened at %s") % std::string(path);
-	    printf("child event happend at %s", std::string(path).c_str());
-        }
+void watcher(zhandle_t *zzh,
+  int type,
+  int state,
+  const char *path,
+  void *watcherCtx)
+  {
+    if (type == ZOO_SESSION_EVENT) {
+       if (state == ZOO_CONNECTED_STATE) {
+           connected = 1;
+
+           printf(("Received a connected event."));
+       } else if (state == ZOO_CONNECTING_STATE) {
+           if(connected == 1) {
+               printf(("Disconnected."));
+           }
+           connected = 0;
+       } else if (state == ZOO_EXPIRED_SESSION_STATE) {
+           expired = 1;
+           connected = 0;
+           zookeeper_close(zkh);
+       }
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -47,7 +65,7 @@ int main(int argc, char* argv[]) {
   if (!zh) {
     return errno;
   }
-  
+
 //  struct ACL CREATE_ONLY_ACL[] = {{ZOO_PERM_CREATE, ZOO_AUTH_IDS}};
 //  struct ACL_vector CREATE_ONLY = {1, CREATE_ONLY_ACL};
   int rc = zoo_create(zh,"/xyz","value", 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_SEQUENCE,
