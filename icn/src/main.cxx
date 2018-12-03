@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <string>
 #include "zookeeper/zookeeper.h"
+#include <unistd.h>
 
 static zhandle_t *zh;
 int connected = 0;
@@ -115,7 +116,10 @@ int main(int argc, char* argv[]) {
     std::string log = std::string(buffer, static_cast<unsigned long>(512));
     printf("opgehaalde value: %s\n", log.c_str());
    }
-
+  get_epns();
+  while(true){
+    sleep(1);
+  }
   zookeeper_close(zh);
   return 0;
 }
