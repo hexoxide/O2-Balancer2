@@ -35,7 +35,7 @@ void watcher(zhandle_t *zzh,
        } else if (state == ZOO_EXPIRED_SESSION_STATE) {
            expired = 1;
            connected = 0;
-           zookeeper_close(zkh);
+           zookeeper_close(zzh);
        }
     }
 }
