@@ -1,35 +1,27 @@
 #include <string.h>
 #include <errno.h>
 #include <string>
-
 #include "zookeeper/zookeeper.h"
 
 static zhandle_t *zh;
-
-/**
- * In this example this method gets the cert for your
- *   environment -- you must provide
- */
-char *foo_get_cert_once(char* id) { return 0; }
 int connected = 0;
 int expired = 0;
 
-/** Watcher function -- empty for this example, not something you should
- * do in real code */
+/** main Watcher function , cotains events for connecting status */
 void watcher(zhandle_t *zzh,
-  int type,
-  int state,
-  const char *path,
-  void *watcherCtx)
+              int type,
+              int state,
+              const char *path,
+              void *watcherCtx)
   {
     if (type == ZOO_SESSION_EVENT) {
        if (state == ZOO_CONNECTED_STATE) {
            connected = 1;
 
-           printf(("Received a connected event."));
+           printf(("Received a connected event.\n"));
        } else if (state == ZOO_CONNECTING_STATE) {
            if(connected == 1) {
-               printf(("Disconnected."));
+               printf(("Disconnected.\n"));
            }
            connected = 0;
        } else if (state == ZOO_EXPIRED_SESSION_STATE) {
@@ -40,25 +32,66 @@ void watcher(zhandle_t *zzh,
     }
 }
 
+void get_epns();
+void epn_watcher (zhandle_t *zh,
+                    int type,
+                    int state,
+                    const char *path,
+                    void *watcherCtx)
+  {
+    printf(("epn watcher triggered %s\n", std::string(path).c_str()));
+    if( type == ZOO_CHILD_EVENT) {
+        get_epns();
+    }
+    printf(("Tasks watcher done\n"));
+}
+/**
+ *
+ * Completion function invoked when the call to get
+ * the list of tasks returns.
+ *
+ */
+void epn_completion (int rc,
+                       const struct String_vector *strings,
+                       const void *data) {
+    switch (rc) {
+        case ZCONNECTIONLOSS:
+        case ZOPERATIONTIMEOUT:
+            get_epns();
+
+            break;
+
+        case ZOK:
+            printf(("Assigning epns\n"));
+
+
+            //struct String_vector *tmp_tasks = added_and_set(strings, &tasks);
+            for(int i = 0; i < strings->count; i++) {
+                printf(strings->data[i]);
+            }
+
+            break;
+        default:
+            //printf(("Something went wrong when checking tasks: %d", rc));
+
+            break;
+    }
+}
+//asynch retrieev epn and place watcher
+void get_epns () {
+  printf(("Getting tasks\n"));
+    zoo_awget_children(zh,
+                       "/EPN",
+                       epn_watcher,
+                       NULL,
+                       epn_completion,
+                       NULL);
+}
+
+
 int main(int argc, char* argv[]) {
   char buffer[512];
-  char p[2048];
-  char *cert=0;
-  char appId[64];
-  printf("starting program");
-
-  strcpy(appId, "example.foo_test");
-  cert = foo_get_cert_once(appId);
-  if(cert!=0) {
-    fprintf(stderr,
-            "Certificate for appid [%s] is [%s]\n",appId,cert);
-    strncpy(p,cert, sizeof(p)-1);
-    free(cert);
-  } else {
-    fprintf(stderr, "Certificate for appid [%s] not found\n",appId);
-    strcpy(p, "dummy");
-  }
-
+  printf("starting program\n");
   zoo_set_debug_level(ZOO_LOG_LEVEL_DEBUG);
 
   zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
@@ -83,6 +116,6 @@ int main(int argc, char* argv[]) {
     printf("opgehaalde value: %s\n", log.c_str());
    }
 
-//  zookeeper_close(zh);
+  zookeeper_close(zh);
   return 0;
 }
