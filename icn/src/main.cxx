@@ -18,10 +18,10 @@ void watcher(zhandle_t *zzh,
        if (state == ZOO_CONNECTED_STATE) {
            connected = 1;
 
-           printf(("Received a connected event.\n"));
+           printf("Received a connected event.\n");
        } else if (state == ZOO_CONNECTING_STATE) {
            if(connected == 1) {
-               printf(("Disconnected.\n"));
+               printf("Disconnected.\n");
            }
            connected = 0;
        } else if (state == ZOO_EXPIRED_SESSION_STATE) {
@@ -39,11 +39,11 @@ void epn_watcher (zhandle_t *zh,
                     const char *path,
                     void *watcherCtx)
   {
-    printf(("epn watcher triggered %s\n", std::string(path).c_str()));
+    printf("epn watcher triggered %s\n", std::string(path).c_str());
     if( type == ZOO_CHILD_EVENT) {
         get_epns();
     }
-    printf(("Tasks watcher done\n"));
+    printf("Tasks watcher done\n");
 }
 /**
  *
@@ -62,24 +62,24 @@ void epn_completion (int rc,
             break;
 
         case ZOK:
-            printf(("Assigning epns\n"));
+            printf("Assigning epns\n");
 
 
             //struct String_vector *tmp_tasks = added_and_set(strings, &tasks);
             for(int i = 0; i < strings->count; i++) {
-                printf(strings->data[i]);
+                printf("%s", strings->data[i]);
             }
 
             break;
         default:
-            //printf(("Something went wrong when checking tasks: %d", rc));
+            printf("Something went wrong when checking tasks: %d", rc);
 
             break;
     }
 }
 //asynch retrieev epn and place watcher
 void get_epns () {
-  printf(("Getting tasks\n"));
+  printf("Getting tasks\n");
     zoo_awget_children(zh,
                        "/EPN",
                        epn_watcher,
