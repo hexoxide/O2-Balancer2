@@ -56,7 +56,7 @@ void epn_completion (int rc,
                        const struct String_vector *strings,
                        const void *data) {
     std::string tempStringData;
-    void* tempVoidData;
+    void* tempVoidData = 0;
     switch (rc) {
         case ZCONNECTIONLOSS:
         case ZOPERATIONTIMEOUT:
@@ -73,7 +73,7 @@ void epn_completion (int rc,
                 printf("%s", strings->data[i]);
             }
 
-            memcpy(tempVoidData, data, sizeof(data));
+            memcpy(tempVoidData, data, sizeof(&data));
             printf("%s", static_cast<char*>(tempVoidData));
             //tempStringData = static_cast<std::string*>(tempVoidData);
 
