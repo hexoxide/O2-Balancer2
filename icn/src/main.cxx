@@ -54,6 +54,8 @@ void epn_watcher (zhandle_t *zh,
 void epn_completion (int rc,
                        const struct String_vector *strings,
                        const void *data) {
+    std::string tempStringData;
+    void* tempVoidData;
     switch (rc) {
         case ZCONNECTIONLOSS:
         case ZOPERATIONTIMEOUT:
@@ -69,6 +71,10 @@ void epn_completion (int rc,
             for(int i = 0; i < strings->count; i++) {
                 printf("%s", strings->data[i]);
             }
+
+            memcpy(tempVoidData, data, sizeof(data));
+            printf("%s", static_cast<char*>(tempVoidData));
+            //tempStringData = static_cast<std::string*>(tempVoidData);
 
             break;
         default:
