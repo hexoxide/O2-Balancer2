@@ -138,26 +138,27 @@ struct String_vector* added_and_set(const struct String_vector* current,
     int count = 0;
     int i;
     for(i = 0; i < current->count; i++) {
-        if (!contains(current->data[i], (*previous))) {
+	if((*previous) == NULL){
+		count++;
+	}
+        else if (!contains(current->data[i], (*previous))) {
             count++;
         }
     }
 
-    allocate_vector(diff, count);
+    //allocate_vector(diff, count);
 
     //int prev_count = count;
     count = 0;
     for(i = 0; i < current->count; i++) {
-        if (!contains(current->data[i], (* previous))) {
-            diff->data[count] = (char*)malloc(sizeof(char) * strlen(current->data[i]) + 1);
-            memcpy(diff->data[count++],
-                   current->data[i],
-                   strlen(current->data[i]));
-        }
+       // if (!contains(current->data[i], (* previous))) {
+            //diff->data[count] = (char*)malloc(sizeof(char) * strlen(current->data[i]) + 1);
+            //memcpy(diff->data[count++], current->data[i], strlen(current->data[i]));
+       // }
     }
 
-    free_vector((struct String_vector*) *previous);
-    (*previous) = make_copy(current);
+    //free_vector((struct String_vector*) *previous);
+    //(*previous) = make_copy(current);
 
     return diff;
 
@@ -218,7 +219,7 @@ void get_task_data(const char *task) {
 
     //LOG_DEBUG(("Task path: %s",task));
     char * tmp_task = strndup(task, 15);
-    char * path = make_path(2, "/tasks/", tmp_task);
+    char * path = make_path(2, "/EPN/", tmp_task);
     //LOG_DEBUG(("Getting task data %s",tmp_task));
 
     zoo_aget(zh,
@@ -273,12 +274,12 @@ void epn_completion (int rc,
         case ZOK:
           {
             printf("Assigning epns\n");
-            struct String_vector *tmp_tasks = added_and_set(strings, &epns);
-            assign_tasks(tmp_tasks);
+           // struct String_vector *tmp_tasks = added_and_set(strings, &epns);
+            assign_tasks(strings);
             for(int i = 0; i < strings->count; i++) {
                 printf("%s", strings->data[i]);
             }
-            free_vector(tmp_tasks);
+            //free_vector(tmp_tasks);
           }
           break;
         default:

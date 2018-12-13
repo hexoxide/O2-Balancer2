@@ -14,7 +14,7 @@ include(macros)
 use_cxx11()
 
 # Enable pedantic errors and warnings for c++
-use_cxx_warning_pedantic()
+#use_cxx_warning_pedantic()
 
 # Configurable options and defaults
 OPTION(ENABLE_TESTS "Enable unit tests" ON)
