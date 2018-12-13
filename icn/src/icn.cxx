@@ -3,6 +3,13 @@
 #include <random>
 #include "o2data.h"
 
+#include <string.h>
+#include <errno.h>
+#include <string>
+#include "zookeeper/zookeeper.h"
+#include <unistd.h>
+#include <stdarg.h>
+
 using namespace std;
 
 /**
