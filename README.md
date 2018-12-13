@@ -4,13 +4,14 @@
 In collaboration with the Amsterdam University of Applied sciences and CERN a load balancer is being developed for the ALICE O2 project.
 
 ## Operation
-The balancer is build out of three parts each with its own purposes and characteristics. 
+The balancer is build out of three parts each with its own purposes and characteristics. Running experiments should have atleast one of each parts running. The InformationControlNode (ICN) orchestrates the experiments and determines parameters such as durations & rate.
 
 * ICN
 * FLP
 * EPN
 
 ## Dependencies
+To ensure the O2Balancer2 remains functional even years after it has been developed all dependencies need to be made easilty available. To ensure this a special repository is setup which uses git submodules to checkout specific versions of dependencies.
 
 ```bash
 git clone https://github.com/hexoxide/raspberry-dependency.git
@@ -63,14 +64,4 @@ Start individual applications of the O2 balancer using gdb and be sure to pipe t
 ```bash
 gdb -tui PATH_TO_BINARY
 run ARGUMENTS > output.log
-```
-
-## Working on serialization
-
-```
-OFI::libfabric protobuf::libprotobuf $<TARGET_OBJECTS:OfiTransport>
-
-CMAKE:
-  find_package2(PRIVATE OFI VERSION 1.6.0 REQUIRED COMPONENTS fi_sockets fi_verbs)
-  find_package2(PRIVATE Protobuf VERSION 3.4.0 REQUIRED)
 ```

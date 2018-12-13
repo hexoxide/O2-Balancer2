@@ -7,6 +7,8 @@ using namespace std;
 
 InformationControlNode::InformationControlNode()
 	: fIterations(0)
+	, stateChangeHook("hook")
+    , currentReconfigureStep(0)
 	, numHeartbeat(0)
 	, feedbackListener()
 	, channels()
@@ -62,6 +64,7 @@ bool InformationControlNode::ConditionalRun()
     						[](void* /*data*/, void* object) { delete static_cast<O2Data*>(object); },
                             s1));
 
+    // ToDo 
 	if(isConfigure) {
 	    for (uint8_t i = 1; i < 5 /*UINT8_MAX*/; i++) {
 		    O2Channel* s2 = new O2Channel();
@@ -114,6 +117,7 @@ void InformationControlNode::PostRun()
 {
 	LOG(trace) << "Heartsbeats	" << numHeartbeat;
 	feedbackListener.join();
+	//SubscribeToStateChange(stateChangeHook, ExitDevice);
 }
 
 /**
@@ -133,6 +137,34 @@ void InformationControlNode::ListenForFeedback()
         ++numAcks;
     }
     LOG(trace) << "Acknowledgements	" << numAcks;
+}
+
+void InformationControlNode::ExitDevice(const State curState)
+{
+	LOG(trace) << "Breaking down";
+    if(curState == READY && currentReconfigureStep == 1)
+    {
+        currentReconfigureStep = 2;
+        LOG(trace) << "DOWN step 1 - Current state is ready";
+        ChangeState("RESET_TASK");
+        // WaitForEndOfStateForMs("RESET_TASK", 1);
+    }
+    // Step 2
+    if(curState == DEVICE_READY && currentReconfigureStep == 2)
+    {
+        currentReconfigureStep = 3;
+        LOG(trace) << "DOWN step 2 - Current state is device ready";
+        ChangeState("RESET_DEVICE");
+        //WaitForEndOfStateForMs("RESET_DEVICE", 1);
+    }
+    // Step 3
+    if(curState == IDLE && currentReconfigureStep == 3)
+    {
+        currentReconfigureStep = 4;
+        LOG(trace) << "DOWN step 3 - Current state is idle";
+        ChangeState("END");
+        // WaitForEndOfStateForMs("INIT_DEVICE", 1);
+    }
 }
 
 InformationControlNode::~InformationControlNode()

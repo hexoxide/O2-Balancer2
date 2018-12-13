@@ -133,16 +133,8 @@ void FirstLineProccessing::PreRun()
     if(isReconfiguringChannels) {
         isReconfiguringChannels = false;
         UnsubscribeFromStateChange(stateChangeHook);
-        //WaitForEndOfState("INIT_TASK");
-        //ChangeState("RUN");
     }
 }
-
-// bool FirstLineProccessing::ConditionalRun()
-// {
-//     //UnsubscribeFromStateChange("hook");
-//     return false;
-// }
 
 FirstLineProccessing::~FirstLineProccessing()
 {

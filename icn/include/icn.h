@@ -25,8 +25,13 @@ class InformationControlNode : public FairMQDevice
     void PostRun() override;
 
     void ListenForFeedback();
+    void ExitDevice(const State);
 
     uint64_t fIterations;
+
+    // used to exit device
+    const std::string stateChangeHook;
+    std::atomic<uint8_t> currentReconfigureStep;
 
     uint64_t numHeartbeat;
     std::thread feedbackListener;
