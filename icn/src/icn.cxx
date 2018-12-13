@@ -104,7 +104,7 @@ InformationControlNode::InformationControlNode()
 
 	zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
 	if (!zh) {
-		return errno;
+		//return errno;
 	}
 
 	//  struct ACL CREATE_ONLY_ACL[] = {{ZOO_PERM_CREATE, ZOO_AUTH_IDS}};
