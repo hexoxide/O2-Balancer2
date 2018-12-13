@@ -5,6 +5,51 @@
 
 using namespace std;
 
+/**
+ *
+ * Completion function invoked when the call to get
+ * the list of tasks returns.
+ *
+ */
+void epn_completion (int rc,
+					const struct String_vector *strings,
+					const void *data) {
+	//struct String_vector *tmp_tasks;
+	switch (rc) {
+		case ZCONNECTIONLOSS:
+		case ZOPERATIONTIMEOUT:
+		{
+			get_epns();
+		}
+		break;
+		case ZOK:
+		{
+			printf("Assigning epns\n");
+			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
+			//assign_tasks(strings);
+			for(int i = 0; i < strings->count; i++) {
+				printf("%s", strings->data[i]);
+			}
+			//free_vector(tmp_tasks);
+		}
+		break;
+		default:
+			printf("Something went wrong when checking tasks: %d", rc);
+
+			break;
+	}
+}
+//asynch retrieev epn and place watcher
+void get_epns () {
+	printf("Getting tasks\n");
+		zoo_awget_children(zh,
+						"/EPN",
+						epn_watcher,
+						NULL,
+						epn_completion,
+						NULL);
+}
+
 InformationControlNode::InformationControlNode()
 	: fIterations(0)
 	, stateChangeHook("hook")
@@ -15,51 +60,6 @@ InformationControlNode::InformationControlNode()
 	, isConfigure(true)
 	, startTime()
 {
-	/**
-	 *
-	 * Completion function invoked when the call to get
-	 * the list of tasks returns.
-	 *
-	 */
-	void epn_completion (int rc,
-						const struct String_vector *strings,
-						const void *data) {
-		//struct String_vector *tmp_tasks;
-		switch (rc) {
-			case ZCONNECTIONLOSS:
-			case ZOPERATIONTIMEOUT:
-			{
-				get_epns();
-			}
-			break;
-			case ZOK:
-			{
-				printf("Assigning epns\n");
-				// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
-				//assign_tasks(strings);
-				for(int i = 0; i < strings->count; i++) {
-					printf("%s", strings->data[i]);
-				}
-				//free_vector(tmp_tasks);
-			}
-			break;
-			default:
-				printf("Something went wrong when checking tasks: %d", rc);
-
-				break;
-		}
-	}
-	//asynch retrieev epn and place watcher
-	void get_epns () {
-		printf("Getting tasks\n");
-			zoo_awget_children(zh,
-							"/EPN",
-							epn_watcher,
-							NULL,
-							epn_completion,
-							NULL);
-	}
-
 	char buffer[512];
 	printf("starting program\n");
 	zoo_set_debug_level(ZOO_LOG_LEVEL_DEBUG);
