@@ -12,50 +12,80 @@
 
 using namespace std;
 
+static zhandle_t *zh;
+int connected = 0;
+int expired = 0;
+static struct String_vector* epns = NULL;
+
+/** main Watcher function , cotains events for connecting status */
+void watcher(zhandle_t *zzh,
+              int type,
+              int state,
+              const char *path,
+              void *watcherCtx)
+  {
+    if (type == ZOO_SESSION_EVENT) {
+       if (state == ZOO_CONNECTED_STATE) {
+           connected = 1;
+
+           printf("Received a connected event.\n");
+       } else if (state == ZOO_CONNECTING_STATE) {
+           if(connected == 1) {
+               printf("Disconnected.\n");
+           }
+           connected = 0;
+       } else if (state == ZOO_EXPIRED_SESSION_STATE) {
+           expired = 1;
+           connected = 0;
+           zookeeper_close(zzh);
+       }
+    }
+}
+
 /**
  *
  * Completion function invoked when the call to get
  * the list of tasks returns.
  *
  */
-void epn_completion (int rc,
-					const struct String_vector *strings,
-					const void *data) {
-	//struct String_vector *tmp_tasks;
-	switch (rc) {
-		case ZCONNECTIONLOSS:
-		case ZOPERATIONTIMEOUT:
-		{
-			get_epns();
-		}
-		break;
-		case ZOK:
-		{
-			printf("Assigning epns\n");
-			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
-			//assign_tasks(strings);
-			for(int i = 0; i < strings->count; i++) {
-				printf("%s", strings->data[i]);
-			}
-			//free_vector(tmp_tasks);
-		}
-		break;
-		default:
-			printf("Something went wrong when checking tasks: %d", rc);
+// void epn_completion (int rc,
+// 					const struct String_vector *strings,
+// 					const void *data) {
+// 	//struct String_vector *tmp_tasks;
+// 	switch (rc) {
+// 		case ZCONNECTIONLOSS:
+// 		case ZOPERATIONTIMEOUT:
+// 		{
+// 			get_epns();
+// 		}
+// 		break;
+// 		case ZOK:
+// 		{
+// 			printf("Assigning epns\n");
+// 			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
+// 			//assign_tasks(strings);
+// 			for(int i = 0; i < strings->count; i++) {
+// 				printf("%s", strings->data[i]);
+// 			}
+// 			//free_vector(tmp_tasks);
+// 		}
+// 		break;
+// 		default:
+// 			printf("Something went wrong when checking tasks: %d", rc);
 
-			break;
-	}
-}
-//asynch retrieev epn and place watcher
-void get_epns () {
-	printf("Getting tasks\n");
-		zoo_awget_children(zh,
-						"/EPN",
-						epn_watcher,
-						NULL,
-						epn_completion,
-						NULL);
-}
+// 			break;
+// 	}
+// }
+// //asynch retrieev epn and place watcher
+// void get_epns () {
+// 	printf("Getting tasks\n");
+// 		zoo_awget_children(zh,
+// 						"/EPN",
+// 						epn_watcher,
+// 						NULL,
+// 						epn_completion,
+// 						NULL);
+// }
 
 InformationControlNode::InformationControlNode()
 	: fIterations(0)
@@ -67,6 +97,7 @@ InformationControlNode::InformationControlNode()
 	, isConfigure(true)
 	, startTime()
 {
+	
 	char buffer[512];
 	printf("starting program\n");
 	zoo_set_debug_level(ZOO_LOG_LEVEL_DEBUG);
