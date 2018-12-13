@@ -7,10 +7,7 @@ using namespace std;
 
 InformationControlNode::InformationControlNode()
 	: fIterations(0)
-	, stateChangeHook("hook")
-    , currentReconfigureStep(0)
 	, numHeartbeat(0)
-	, feedbackListener()
 	, channels()
 	, isConfigure(true)
 	, startTime()
@@ -117,7 +114,10 @@ void InformationControlNode::PostRun()
 {
 	LOG(trace) << "Heartsbeats	" << numHeartbeat;
 	feedbackListener.join();
-	//SubscribeToStateChange(stateChangeHook, ExitDevice);
+
+	// Initialize exit device thread
+	// LOG(TRACE) << "Not starting exit thread";
+	// exitDevice = thread(&InformationControlNode::ExitDevice, this);
 }
 
 /**
@@ -139,34 +139,20 @@ void InformationControlNode::ListenForFeedback()
     LOG(trace) << "Acknowledgements	" << numAcks;
 }
 
-void InformationControlNode::ExitDevice(const State curState)
-{
-	LOG(trace) << "Breaking down";
-    if(curState == READY && currentReconfigureStep == 1)
-    {
-        currentReconfigureStep = 2;
-        LOG(trace) << "DOWN step 1 - Current state is ready";
-        ChangeState("RESET_TASK");
-        // WaitForEndOfStateForMs("RESET_TASK", 1);
-    }
-    // Step 2
-    if(curState == DEVICE_READY && currentReconfigureStep == 2)
-    {
-        currentReconfigureStep = 3;
-        LOG(trace) << "DOWN step 2 - Current state is device ready";
-        ChangeState("RESET_DEVICE");
-        //WaitForEndOfStateForMs("RESET_DEVICE", 1);
-    }
-    // Step 3
-    if(curState == IDLE && currentReconfigureStep == 3)
-    {
-        currentReconfigureStep = 4;
-        LOG(trace) << "DOWN step 3 - Current state is idle";
-        ChangeState("END");
-        // WaitForEndOfStateForMs("INIT_DEVICE", 1);
-    }
-}
+// void InformationControlNode::ExitDevice()
+// {
+// 	WaitForEndOfState("RUN");
+// 	LOG(TRACE) << "RESET TASK";
+//     ChangeState("RESET_TASK");
+//     WaitForEndOfState("RESET_TASK");
+//     LOG(TRACE) << "RESET DEVICE";
+//     ChangeState("RESET_DEVICE");
+//     WaitForEndOfState("RESET_DEVICE");
+//     LOG(TRACE) << "END";
+// 	ChangeState("END");
+// }
 
 InformationControlNode::~InformationControlNode()
 {
+	// exitDevice.join();
 }

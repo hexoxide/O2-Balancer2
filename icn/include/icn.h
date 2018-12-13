@@ -24,17 +24,15 @@ class InformationControlNode : public FairMQDevice
     bool ConditionalRun() override;
     void PostRun() override;
 
-    void ListenForFeedback();
-    void ExitDevice(const State);
-
     uint64_t fIterations;
 
-    // used to exit device
-    const std::string stateChangeHook;
-    std::atomic<uint8_t> currentReconfigureStep;
-
-    uint64_t numHeartbeat;
+    void ListenForFeedback();
     std::thread feedbackListener;
+
+    // void ExitDevice();
+    // std::thread exitDevice;
+
+    uint64_t numHeartbeat;    
     std::vector<O2Channel> channels;
     bool isConfigure;
     std::chrono::system_clock::time_point startTime;
