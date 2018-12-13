@@ -17,7 +17,7 @@ add_executable(testexample ${TEST_EXAMPLE_SOURCE})
 
 target_link_libraries(
 	testexample
-	libo2
+	O2
 	${O2_Balancer2_LIBRARIES}
 	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 )

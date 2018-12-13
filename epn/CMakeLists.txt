@@ -15,4 +15,4 @@ include_directories(include)
 message("O2B2: EPN cxx flags: ${CMAKE_CXX_FLAGS}")
 add_executable(epn ${BIN_EPN_SOURCE} ${BIN_EPN_HEADERS})
 
-target_link_libraries(epn libo2 ${O2_Balancer2_LIBRARIES})
+target_link_libraries(epn O2 ${O2_Balancer2_LIBRARIES})

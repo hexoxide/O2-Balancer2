@@ -1,11 +1,16 @@
 #ifndef ICN_H
 #define ICN_H
 
+// Standard library
 #include <thread>
 #include <chrono>
 #include <string>
 
+// Dependencies
 #include "FairMQDevice.h"
+
+// Local
+#include "o2channel.h"
 
 class InformationControlNode : public FairMQDevice
 {
@@ -20,10 +25,19 @@ class InformationControlNode : public FairMQDevice
     void PostRun() override;
 
     void ListenForFeedback();
+    void ExitDevice(const State);
 
-    std::thread fFeedbackListener;
+    uint64_t fIterations;
 
-    //FairMQPollerPtr poller;
+    // used to exit device
+    const std::string stateChangeHook;
+    std::atomic<uint8_t> currentReconfigureStep;
+
+    uint64_t numHeartbeat;
+    std::thread feedbackListener;
+    std::vector<O2Channel> channels;
+    bool isConfigure;
+    std::chrono::system_clock::time_point startTime;
 };
 
 #endif /* ICN_H */

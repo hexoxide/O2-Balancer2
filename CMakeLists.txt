@@ -57,8 +57,8 @@ set(O2_Balancer2_LIBRARIES
 	Boost::system
 	Boost::program_options
   	Boost::thread
-	${Boost_LOG_LIBRARY}
-	${Boost_LOG_SETUP_LIBRARY}
+	Boost::log
+	Boost::log_setup
 	${ZeroMQ_LIBRARY}
 	${ZOOKEEPER_LIBRARIES}
 	FairLogger

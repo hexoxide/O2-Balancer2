@@ -1,12 +1,13 @@
-project(O2Lib)
+project(O2)
 
-set(LIB_O2LIB_SRC 
-	src/libo2.cxx
+set(LIB_O2_SRC 
 )
 
-set(LIB_O2LIB_HEADERS 
-	include/libo2.h
+set(LIB_O2_HEADERS
+	include/o2channel.h 
+	include/o2data.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include) 
-add_library(libo2 SHARED ${LIB_O2LIB_SRC} ${LIB_O2LIB_HEADERS})
+add_library(O2 SHARED ${LIB_O2_SRC} ${LIB_O2_HEADERS})
+set_target_properties(O2 PROPERTIES LINKER_LANGUAGE CXX)
