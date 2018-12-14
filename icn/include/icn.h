@@ -29,9 +29,6 @@ class InformationControlNode : public FairMQDevice
     void ListenForFeedback();
     std::thread feedbackListener;
 
-    // void ExitDevice();
-    // std::thread exitDevice;
-
     uint64_t numHeartbeat;    
     std::vector<O2Channel> channels;
     bool isConfigure;

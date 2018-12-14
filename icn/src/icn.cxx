@@ -1,6 +1,7 @@
 #include "icn.h"
 
 #include <random>
+
 #include "o2data.h"
 
 using namespace std;
@@ -43,17 +44,18 @@ bool InformationControlNode::ConditionalRun()
                         firstPacket));
     	Send(firstParts, "broadcast", 0, 0); // Send the packet asynchronously
     	LOG(trace) << "Waiting for FLP's to register on broadcast channel";
-    	this_thread::sleep_for(chrono::seconds(10)); // Wait 10 seconds to ensure all pub-sub channels are setup
+    	this_thread::sleep_for(chrono::seconds(5)); // Wait 10 seconds to ensure all pub-sub channels are setup
     	LOG(trace) << "FLP's should have registered?";
     }
 
     // First part of message should always be of type O2Data
 	O2Data* s1 = new O2Data();
 	s1->heartbeat = numHeartbeat;
-	mt19937 rng;
-    rng.seed(random_device()());
-    uniform_int_distribution<mt19937::result_type> dist4(1,1);
-	s1->tarChannel = dist4(rng); // selected channel for flp's to transmit on
+	//mt19937 rng;
+    //rng.seed(random_device()());
+    //uniform_int_distribution<mt19937::result_type> dist4(1,1);
+    // TODO round-robin algorithm
+	s1->tarChannel = 1; //dist4(rng); // selected channel for flp's to transmit on
 	s1->configure = isConfigure; // if the packet is configuring the flp channels
 	void* data1 = s1;
     parts.AddPart(NewMessage(data1, 
@@ -61,15 +63,11 @@ bool InformationControlNode::ConditionalRun()
     						[](void* /*data*/, void* object) { delete static_cast<O2Data*>(object); },
                             s1));
 
-    // ToDo 
+    // TODO configure based on packets from EPN's
 	if(isConfigure) {
-	    for (uint8_t i = 1; i < 5 /*UINT8_MAX*/; i++) {
+	    for (uint8_t i = 1; i < 2 /*UINT8_MAX*/; i++) {
 		    O2Channel* s2 = new O2Channel();
 			s2->index = i;
-			//s2->ip1 = 192;
-			//s2->ip2 = 168;
-			//s2->ip3 = 0;
-			//s2->ip4 = i;
 			s2->ip1 = 127;
 			s2->ip2 = 0;
 			s2->ip3 = 0;
@@ -83,10 +81,10 @@ bool InformationControlNode::ConditionalRun()
 		}
 	}
 
+	// Send messages to FLP's as long as fIterations is not reached
 	if(numHeartbeat < fIterations) 
 	{
     	Send(parts, "broadcast", 0, 0);
-
     	if(isConfigure)
     	{
     		this_thread::sleep_for(chrono::seconds(2));
@@ -100,7 +98,7 @@ bool InformationControlNode::ConditionalRun()
     {
     	LOG(trace) << "Done sending packets";
     	LOG(trace) << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
-    	this_thread::sleep_for(chrono::milliseconds(20));
+    	this_thread::sleep_for(chrono::seconds(1));
     	return false;
     }
 
@@ -114,10 +112,6 @@ void InformationControlNode::PostRun()
 {
 	LOG(trace) << "Heartsbeats	" << numHeartbeat;
 	feedbackListener.join();
-
-	// Initialize exit device thread
-	// LOG(TRACE) << "Not starting exit thread";
-	// exitDevice = thread(&InformationControlNode::ExitDevice, this);
 }
 
 /**
@@ -139,20 +133,6 @@ void InformationControlNode::ListenForFeedback()
     LOG(trace) << "Acknowledgements	" << numAcks;
 }
 
-// void InformationControlNode::ExitDevice()
-// {
-// 	WaitForEndOfState("RUN");
-// 	LOG(TRACE) << "RESET TASK";
-//     ChangeState("RESET_TASK");
-//     WaitForEndOfState("RESET_TASK");
-//     LOG(TRACE) << "RESET DEVICE";
-//     ChangeState("RESET_DEVICE");
-//     WaitForEndOfState("RESET_DEVICE");
-//     LOG(TRACE) << "END";
-// 	ChangeState("END");
-// }
-
 InformationControlNode::~InformationControlNode()
 {
-	// exitDevice.join();
 }

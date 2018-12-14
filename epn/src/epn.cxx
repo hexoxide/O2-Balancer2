@@ -1,34 +1,78 @@
 #include "epn.h"
 
+#include "o2data.h"
+#include "o2channel.h"
+
 using namespace std;
+
+/** Name of the channel an epn will return information about received messages on */
+const std::string EventProccessingNode::feedbackChannel = "feedback";
+
+/** Number of FLP command line argument, used to set fNumFlp variable */
+const std::string EventProccessingNode::pNumberOfFLP = "num-flp";
 
 EventProccessingNode::EventProccessingNode()
     : fNumFlp(0)
     , receivedMessages(0)
+    , currentHeartbeat(0)
+    , isCurrentlyOutOfOrder(false)
 {
-    // register a handler for data arriving on "data" channel
-    OnData("1", &EventProccessingNode::HandleData);
 }
 
 void EventProccessingNode::InitTask()
 {
-    fNumFlp = fConfig->GetValue<uint64_t>("num-flp");
+    // register a handler for data arriving on "data" channel
+    OnData(fConfig->GetValue<std::string>("id"), &EventProccessingNode::HandleData);
+    fNumFlp = fConfig->GetValue<uint64_t>(pNumberOfFLP);
 }
 
-// handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool EventProccessingNode::HandleData(FairMQMessagePtr& msg, int /*index*/)
+/**
+ * s
+ * @return if the handling of the data was successful
+ */
+bool EventProccessingNode::HandleData(FairMQParts& msg, int /*index*/)
 {
-    // LOG(info) << "Received: \"" << string(static_cast<char*>(msg->GetData()), msg->GetSize()) << "\"";
-    receivedMessages++;
-    if(receivedMessages >= fNumFlp) {
-        receivedMessages = 0;
-        FairMQMessagePtr msg(NewSimpleMessage(fConfig->GetValue<std::string>("id")));
-        // in case of error or transfer interruption, return false to go to IDLE state
-        // successfull transfer will return number of bytes transfered (can be 0 if sending an empty message).
-        // LOG(error) << fConfig->GetValue<std::string>("id");
-        Send(msg, "feedback");
+    bool firstMessagePart = true;
+    O2Data* data;
+
+    // Iterate through all message parts
+    for (const auto& part : msg)
+    {
+        if(firstMessagePart)
+        {
+            firstMessagePart = false;
+            data = static_cast<O2Data*>(part->GetData());
+        }
     }
-    // return true if want to be called again (otherwise return false go to IDLE state)
+
+    // When the first message / sub-timeframe arrives register its heartbeat id.
+    if(receivedMessages == 0 && currentHeartbeat < data->heartbeat)
+    {
+        currentHeartbeat = data->heartbeat;
+    }
+
+    // Validate the current message heartbeat is equal to the heartbeat we should currently be receiving from FLP's
+    receivedMessages++;
+    if(currentHeartbeat != data->heartbeat && !isCurrentlyOutOfOrder)
+    {
+        // LOG(TRACE) << "Message " << to_string(receivedMessages) << " arrived out of order!";
+        isCurrentlyOutOfOrder = true;
+    }
+
+    // if more messages than FLP's present have been received send a feedback message
+    if(receivedMessages >= fNumFlp) 
+    {
+        receivedMessages = 0;
+
+        // Before sending the feedback ensure the current set of messages wasn't out of order
+        if(!isCurrentlyOutOfOrder) {
+            FairMQMessagePtr feedback(NewSimpleMessage(fConfig->GetValue<std::string>("id")));
+            Send(feedback, feedbackChannel, 0, 0);
+        }
+
+        isCurrentlyOutOfOrder = false;
+    }
+
     return true;
 }
 
