@@ -58,8 +58,8 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
             string ip = to_string(data2->ip1) + "." + to_string(data2->ip2) + "." + to_string(data2->ip3) + "." + to_string(data2->ip4);
             string port = to_string(data2->port);
             FairMQChannel channel("push", "connect", "tcp://" + ip + ":" + to_string(data2->port));
-            LOG(trace) << "Configure packet:" << name << " - " << ip << ":" << port;
             channel.UpdateRateLogging(1);
+            LOG(trace) << "Configure packet:" << name << " - " << ip << ":" << port;
             channel.ValidateChannel();
             AddChannel(name, channel);
         }
@@ -72,7 +72,6 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
         return false;
     }
 
-    //TODO convert into multipart message and ensure the first packet is of type O2Data
     parts.AddPart(NewMessage(text.get(),
                                     fTextSize,
                                     [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },

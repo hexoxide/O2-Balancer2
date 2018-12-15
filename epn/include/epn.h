@@ -13,7 +13,8 @@ class EventProccessingNode : public FairMQDevice
     static const std::string feedbackChannel;
     static const std::string pNumberOfFLP;
 
-  	virtual void InitTask();
+  	void InitTask() override;
+    void PreRun() override;
 
     bool HandleData(FairMQParts& msg, int);
 

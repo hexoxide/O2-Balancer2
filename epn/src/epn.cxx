@@ -26,6 +26,36 @@ void EventProccessingNode::InitTask()
     fNumFlp = fConfig->GetValue<uint64_t>(pNumberOfFLP);
 }
 
+void EventProccessingNode::PreRun()
+{
+    FairMQParts parts;
+    O2Data* firstPacket = new O2Data();
+    firstPacket->heartbeat = 0;
+    firstPacket->tarChannel = 0;
+    firstPacket->configure = true;
+    void* data1 = firstPacket;
+    parts.AddPart(NewMessage(data1,
+                            sizeof(O2Data),
+                            [](void* /*data*/, void* object) { delete static_cast<O2Data*>(object); },
+                            firstPacket));
+    // TODO ask kernel nicely for ip address try not to use unreadable C examples.
+    O2Channel* s2 = new O2Channel();
+    s2->index = stoll(fConfig->GetValue<std::string>("id"));
+    s2->ip1 = 127;
+    s2->ip2 = 0;
+    s2->ip3 = 0;
+    s2->ip4 = 1;
+    s2->port = 5555;
+    void* data2 = s2;
+    parts.AddPart(NewMessage(data2, 
+                            sizeof(O2Channel),
+                            [](void* /*data*/, void* object) { delete static_cast<O2Channel*>(object); },
+                            s2));
+    this_thread::sleep_for(chrono::seconds(10));
+    LOG(TRACE) << "Sending configuration packet";
+    Send(parts, feedbackChannel, 0, 0); // Send the packet asynchronously
+}
+
 /**
  * s
  * @return if the handling of the data was successful
