@@ -131,14 +131,13 @@ void InformationControlNode::ListenForFeedback()
     while (CheckCurrentState(RUNNING))
     {
         FairMQParts msg;
-        if (Receive(msg, "feedback") < 0)
-        {
-            break;
-        }
+        // If we have no messages do nothing
+        if (Receive(msg, "feedback") < 0) break;
 
-        if(isPreConfigure) {
+        if(isConfigure) {
+        	// after first channel packet leave preConfigure
+        	// this will wait additional 10 seconds before leaving isConfigure which will ignore further channel messages
         	isPreConfigure = false;
-        	LOG(TRACE) << "Received EPN channel packets, leaving preConfigure state";
         	// Iterate through all parts, first part is always of type O2Data so we ignore it
 	    	bool isFirst = true;
 		    for (const auto& part : msg) {
@@ -153,12 +152,12 @@ void InformationControlNode::ListenForFeedback()
 		    	LOG(TRACE) << "Got channel " << to_string(data->index) << " " << to_string(data->port);
 		    	// Push data into vector
 		    	channels.push_back(data);
-		    	// This does not count towards acknowledgements
-		    	break;
 		    }
         }
-
-        ++numAcks;
+        // TODO verify the EPN from which the ack was received and its heartbeat
+        else {
+        	++numAcks;
+        }
     }
     LOG(trace) << "Acknowledgements	" << numAcks;
 }
