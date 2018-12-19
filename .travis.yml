@@ -29,7 +29,7 @@ before_install:
   - cd depdendency
   - git checkout O2v2
   - git submodule update --init --recursive
-  - ./install-dependencies.sh > dependencies-report.txt
+  - ./install-dependencies.sh
 script: 
   - cd ${TRAVIS_BUILD_DIR}
   - if [ ! -d "build" ]; then mkdir build; fi
