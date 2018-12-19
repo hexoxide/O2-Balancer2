@@ -1,5 +1,5 @@
 #ifndef O2CHANNEL_H
-#define O2CHANNEL
+#define O2CHANNEL_H
 
 #include <stdint.h>
 

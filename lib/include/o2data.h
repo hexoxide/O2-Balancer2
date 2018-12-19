@@ -1,5 +1,5 @@
 #ifndef O2DATA_H
-#define O2DATA
+#define O2DATA_H
 
 #include <stdint.h>
 

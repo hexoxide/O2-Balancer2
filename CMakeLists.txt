@@ -81,7 +81,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message("O2B2: Disabling gcc optimization & adding extensive debug symbols")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
-	message("O2B2: Optimization the living shit out of gcc")
+	message("O2B2: Optimizing the living shit out of gcc")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast")
 endif()
 

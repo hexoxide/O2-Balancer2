@@ -7,7 +7,7 @@ class EventProccessingNode : public FairMQDevice
 {
   public:
     EventProccessingNode();
-    virtual ~EventProccessingNode();
+    ~EventProccessingNode() override;
 
   protected:
     static const std::string feedbackChannel;

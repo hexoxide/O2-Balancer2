@@ -11,6 +11,4 @@ CloneAble* CloneAble::doClone()
 }
 
 CloneAble::~CloneAble()
-{
-	
-}
+= default;

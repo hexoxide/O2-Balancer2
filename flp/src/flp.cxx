@@ -34,7 +34,7 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
             currentChannel = to_string(data->tarChannel);
 
             // Add the received data as message part and copy it so FairMQ does not free the object we try to send
-            O2Data* returnData = new O2Data(*data);
+            auto  returnData = new O2Data(*data);
             void* dataPointer = returnData;
             parts.AddPart(NewMessage(dataPointer,
                             sizeof(O2Data),
@@ -161,5 +161,4 @@ void FirstLineProccessing::PreRun()
 }
 
 FirstLineProccessing::~FirstLineProccessing()
-{
-}
+= default;

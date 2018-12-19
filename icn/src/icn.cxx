@@ -56,7 +56,7 @@ bool InformationControlNode::ConditionalRun()
     }
 
     // First part of message should always be of type O2Data
-	O2Data* s1 = new O2Data();
+	auto  s1 = new O2Data();
 	s1->heartbeat = numHeartbeat;
 	//mt19937 rng;
     //rng.seed(random_device()());
@@ -72,7 +72,7 @@ bool InformationControlNode::ConditionalRun()
 
     // TODO configure based on packets from EPN's
 	if(isConfigure) {
-	    for (auto it = channels.begin(); it != channels.end(); it++) {
+	    for (auto & channel : channels) {
 		    // O2Channel* s2 = new O2Channel();
 			// s2->index = i;
 			// s2->ip1 = 127;
@@ -80,11 +80,11 @@ bool InformationControlNode::ConditionalRun()
 			// s2->ip3 = 0;
 			// s2->ip4 = 1;
 			// s2->port = 5555;
-			void* data = (*it);
+			void* data = channel;
 		    parts.AddPart(NewMessage(data, 
 		    						sizeof(O2Channel),
 		    						[](void* /*data*/, void* object) { /** delete static_cast<O2Channel*>(object); */ },
-		                            (*it)));
+		                            channel));
 		}
 	}
 
@@ -148,7 +148,7 @@ void InformationControlNode::ListenForFeedback()
 	    		}
 	    		// Copy data and assign to pointer
 	    		// TODO std::unique_ptr
-		    	O2Channel* data = new O2Channel(*static_cast<O2Channel*>(part->GetData()));
+		    	auto  data = new O2Channel(*static_cast<O2Channel*>(part->GetData()));
 		    	LOG(TRACE) << "Got channel " << to_string(data->index) << " " << to_string(data->port);
 		    	// Push data into vector
 		    	channels.push_back(data);
@@ -190,6 +190,4 @@ void InformationControlNode::ListenForFeedback()
 // }
 
 InformationControlNode::~InformationControlNode()
-{
-
-}
+= default;

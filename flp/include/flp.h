@@ -11,7 +11,7 @@ class FirstLineProccessing : public FairMQDevice
 {
   public:
     FirstLineProccessing();
-    virtual ~FirstLineProccessing();
+    ~FirstLineProccessing() override;
 
   protected:
     void InitTask() override;

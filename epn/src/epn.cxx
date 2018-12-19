@@ -29,7 +29,7 @@ void EventProccessingNode::InitTask()
 void EventProccessingNode::PreRun()
 {
     FairMQParts parts;
-    O2Data* firstPacket = new O2Data();
+    auto  firstPacket = new O2Data();
     firstPacket->heartbeat = 0;
     firstPacket->tarChannel = 0;
     firstPacket->configure = true;
@@ -39,7 +39,7 @@ void EventProccessingNode::PreRun()
                             [](void* /*data*/, void* object) { delete static_cast<O2Data*>(object); },
                             firstPacket));
     // TODO ask kernel nicely for ip address try not to use unreadable C examples.
-    O2Channel* s2 = new O2Channel();
+    auto  s2 = new O2Channel();
     s2->index = stoll(fConfig->GetValue<std::string>("id"));
     s2->ip1 = 127;
     s2->ip2 = 0;
@@ -63,7 +63,7 @@ void EventProccessingNode::PreRun()
 bool EventProccessingNode::HandleData(FairMQParts& msg, int /*index*/)
 {
     bool firstMessagePart = true;
-    O2Data* data;
+    O2Data* data = nullptr;
 
     // Iterate through all message parts
     for (const auto& part : msg)
@@ -107,5 +107,4 @@ bool EventProccessingNode::HandleData(FairMQParts& msg, int /*index*/)
 }
 
 EventProccessingNode::~EventProccessingNode()
-{
-}
+= default;

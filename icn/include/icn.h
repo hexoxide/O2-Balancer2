@@ -16,7 +16,7 @@ class InformationControlNode : public FairMQDevice
 {
   public:
     InformationControlNode();
-    virtual ~InformationControlNode();
+    ~InformationControlNode() override;
 
   protected:
     void InitTask() override;
