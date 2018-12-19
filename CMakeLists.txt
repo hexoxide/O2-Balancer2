@@ -19,6 +19,7 @@ use_cxx_warning_pedantic()
 # Configurable options and defaults
 OPTION(ENABLE_TESTS "Enable unit tests" ON)
 OPTION(ENABLE_CODECOV "Measure code coverage" OFF)
+OPTION(ENABLE_DOXY "Generate documentation" ON)
 
 # Required packages
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -79,7 +80,7 @@ endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message("O2B2: Disabling gcc optimization & adding extensive debug symbols")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -O0")
 elseif(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
 	message("O2B2: Optimizing the living shit out of gcc")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast")
@@ -102,4 +103,27 @@ if(ENABLE_TESTS)
 	message("O2B2: Enabling tests")
 	ENABLE_TESTING()
 	add_subdirectory(tests)
+endif()
+
+# Generate Doxygen Documentation
+if(ENABLE_DOXY)
+	find_package(Doxygen)
+	if (DOXYGEN_FOUND)
+	    # set input and output files
+	    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+	    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+	    # request to configure the file
+	    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+	    message("O2B2: Doxygen build started")
+
+	    # note the option ALL which allows to build the docs together with the application
+	    add_custom_target( doc_doxygen ALL
+		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		COMMENT "Generating API documentation with Doxygen"
+		VERBATIM )
+	else (DOXYGEN_FOUND)
+	  message("O2B2: Doxygen need to be installed to generate the doxygen documentation")
+	endif (DOXYGEN_FOUND)
 endif()
