@@ -41,8 +41,41 @@ void watcher(zhandle_t *zzh,
        }
     }
 }
-void get_task_data(const char *);
-void get_task_data_completion(int rc, const char *value, int value_len,
+char * make_path(int num, ...) {
+    const char * tmp_string;
+
+    va_list arguments;
+    va_start ( arguments, num );
+
+    int total_length = 0;
+    int x;
+    for ( x = 0; x < num; x++ ) {
+        tmp_string = va_arg ( arguments, const char * );
+        if(tmp_string != NULL) {
+            //LOG_DEBUG(("Counting path with this path %s (%d)", tmp_string, num));
+            total_length += strlen(tmp_string);
+        }
+    }
+
+    va_end ( arguments );
+
+    char * path = (char*)malloc(total_length * sizeof(char) + 1);
+    path[0] = '\0';
+    va_start ( arguments, num );
+
+    for ( x = 0; x < num; x++ ) {
+        tmp_string = va_arg ( arguments, const char * );
+        if(tmp_string != NULL) {
+            //LOG_DEBUG(("Counting path with this path %s",tmp_string));
+            strcat(path, tmp_string);
+        }
+    }
+
+    return path;
+    }
+
+void FirstLineProccessing::get_task_data(const char *);
+void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
                               const struct Stat *stat, const void *data) {
     //int worker_index;
 
@@ -64,7 +97,7 @@ void get_task_data_completion(int rc, const char *value, int value_len,
             // printf("%s\n", nodeValue);
             //new fairqm channel with name data  and port and ip in value
                     // Add channels to device based on O2Channel message part data
-            FairMQChannel channel("push", "connect", "tcp://" + strndup(value, value_len));
+            FairMQChannel channel("push", "connect", strndup(value, value_len));
             LOG(trace) << "Configure packet:" << nodeName << " - " << nodeValue;
             channel.UpdateRateLogging(1);
             channel.ValidateChannel();
@@ -136,7 +169,7 @@ void get_task_data_completion(int rc, const char *value, int value_len,
             break;
     }
 }
-void get_task_data(const char *task) {
+void FirstLineProccessing::get_task_data(const char *task) {
     if(task == NULL) return;
 
     //LOG_DEBUG(("Task path: %s",task));
@@ -151,7 +184,7 @@ void get_task_data(const char *task) {
              (const void *) tmp_task);
     free(path);
 }
-void assign_tasks(const struct String_vector *strings) {
+void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     /*
      * for each epn receive ip and port
      */
@@ -163,8 +196,8 @@ void assign_tasks(const struct String_vector *strings) {
     }
 }
 
-void get_epns();
-void epn_watcher (zhandle_t *zh,
+void FirstLineProccessing::get_epns();
+void FirstLineProccessing::epn_watcher (zhandle_t *zh,
                     int type,
                     int state,
                     const char *path,
@@ -182,7 +215,7 @@ void epn_watcher (zhandle_t *zh,
  * the list of tasks returns.
  *
  */
-void epn_completion (int rc,
+void FirstLineProccessing::epn_completion (int rc,
 					const struct String_vector *strings,
 					const void *data) {
 	//struct String_vector *tmp_tasks;
@@ -211,7 +244,7 @@ void epn_completion (int rc,
 	}
 }
 //asynch retrieev epn and place watcher
-void get_epns () {
+void FirstLineProccessing::get_epns () {
 	printf("Getting tasks\n");
 		zoo_awget_children(zh,
 						"/EPN",

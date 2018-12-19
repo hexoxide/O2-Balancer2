@@ -18,6 +18,12 @@ class FirstLineProccessing : public FairMQDevice
     void PreRun() override;
 
     //bool HandleBroadcast(FairMQParts&, int);
+    void get_task_data(const char *);
+    void get_task_data_completion(int rc, const char *value, int value_len, const struct Stat *stat, const void *data);
+    void assign_tasks(const struct String_vector *strings);
+    void FirstLineProccessing::get_epns();
+    void FirstLineProccessing::epn_watcher (zhandle_t *zh, int type, int state, const char *path, void *watcherCtx);
+    void FirstLineProccessing::epn_completion (int rc, const struct String_vector *strings, const void *data);
 
     uint64_t fTextSize;
 
