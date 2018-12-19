@@ -15,6 +15,7 @@ class EventProccessingNode : public FairMQDevice
 	bool HandleData(FairMQMessagePtr&, int);
 
   	uint64_t fNumFlp;
+    string address;
   	
   	uint64_t receivedMessages;
 

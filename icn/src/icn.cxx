@@ -119,11 +119,6 @@ InformationControlNode::InformationControlNode()
 		//return errno;
 	}
 
-	//  struct ACL CREATE_ONLY_ACL[] = {{ZOO_PERM_CREATE, ZOO_AUTH_IDS}};
-	//  struct ACL_vector CREATE_ONLY = {1, CREATE_ONLY_ACL};
-	int rc = zoo_create(zh,"/xyz","value", 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_SEQUENCE,
-						buffer, sizeof(buffer)-1);
-
 	/** this operation will fail with a ZNOAUTH error */
 	int buflen= sizeof(buffer);
 	struct Stat stat;

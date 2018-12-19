@@ -17,7 +17,7 @@ class FirstLineProccessing : public FairMQDevice
     void InitTask() override;
     void PreRun() override;
 
-    bool HandleBroadcast(FairMQParts&, int);
+    //bool HandleBroadcast(FairMQParts&, int);
 
     uint64_t fTextSize;
 
