@@ -41,51 +41,63 @@ void watcher(zhandle_t *zzh,
        }
     }
 }
-
+void get_epns();
+void epn_watcher (zhandle_t *zh,
+                    int type,
+                    int state,
+                    const char *path,
+                    void *watcherCtx)
+  {
+    printf("epn watcher triggered %s\n", std::string(path).c_str());
+    if( type == ZOO_CHILD_EVENT) {
+        get_epns();
+    }
+    printf("Tasks watcher done\n");
+}
 /**
  *
  * Completion function invoked when the call to get
  * the list of tasks returns.
  *
  */
-// void epn_completion (int rc,
-// 					const struct String_vector *strings,
-// 					const void *data) {
-// 	//struct String_vector *tmp_tasks;
-// 	switch (rc) {
-// 		case ZCONNECTIONLOSS:
-// 		case ZOPERATIONTIMEOUT:
-// 		{
-// 			get_epns();
-// 		}
-// 		break;
-// 		case ZOK:
-// 		{
-// 			printf("Assigning epns\n");
-// 			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
-// 			//assign_tasks(strings);
-// 			for(int i = 0; i < strings->count; i++) {
-// 				printf("%s", strings->data[i]);
-// 			}
-// 			//free_vector(tmp_tasks);
-// 		}
-// 		break;
-// 		default:
-// 			printf("Something went wrong when checking tasks: %d", rc);
+void epn_completion (int rc,
+					const struct String_vector *strings,
+					const void *data) {
+	//struct String_vector *tmp_tasks;
+	switch (rc) {
+		case ZCONNECTIONLOSS:
+		case ZOPERATIONTIMEOUT:
+		{
+			get_epns();
+		}
+		break;
+		case ZOK:
+		{
+			printf("Assigning epns\n");
+			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
+			//assign_tasks(strings);
+			for(int i = 0; i < strings->count; i++) {
+				printf("%s", strings->data[i]);
+			}
+			//free_vector(tmp_tasks);
+		}
+		break;
+		default:
+			printf("Something went wrong when checking tasks: %d", rc);
 
-// 			break;
-// 	}
-// }
-// //asynch retrieev epn and place watcher
-// void get_epns () {
-// 	printf("Getting tasks\n");
-// 		zoo_awget_children(zh,
-// 						"/EPN",
-// 						epn_watcher,
-// 						NULL,
-// 						epn_completion,
-// 						NULL);
-// }
+			break;
+	}
+}
+//asynch retrieev epn and place watcher
+void get_epns () {
+	printf("Getting tasks\n");
+		zoo_awget_children(zh,
+						"/EPN",
+						epn_watcher,
+						NULL,
+						epn_completion,
+						NULL);
+}
 
 InformationControlNode::InformationControlNode()
 	: fIterations(0)
@@ -123,7 +135,7 @@ InformationControlNode::InformationControlNode()
 		std::string log = std::string(buffer, static_cast<unsigned long>(512));
 		printf("opgehaalde value: %s\n", log.c_str());
 	}
-	//get_epns();
+	get_epns();
 	// zookeeper_close(zh);
 	// return 0;	
 }
