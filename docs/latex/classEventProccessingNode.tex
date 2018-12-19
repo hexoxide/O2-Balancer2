@@ -1,0 +1,132 @@
+\hypertarget{classEventProccessingNode}{}\section{Event\+Proccessing\+Node Class Reference}
+\label{classEventProccessingNode}\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+
+
+{\ttfamily \#include $<$epn.\+h$>$}
+
+
+
+Inheritance diagram for Event\+Proccessing\+Node\+:
+% FIG 0
+
+
+Collaboration diagram for Event\+Proccessing\+Node\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classEventProccessingNode_a6312a3edf6a8baa7dee9f65c48090fa2}{Event\+Proccessing\+Node} ()
+\item 
+\hyperlink{classEventProccessingNode_aecdaccecfbcb665833a206b7aa8e86c5}{$\sim$\+Event\+Proccessing\+Node} () override
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classEventProccessingNode_aa8693560f7c9496254a06f2ac038fc92}{Init\+Task} () override
+\item 
+void \hyperlink{classEventProccessingNode_a093e1acf1b5be850fb0b8e420eec09ed}{Pre\+Run} () override
+\item 
+bool \hyperlink{classEventProccessingNode_aedf9495467d0596dda9e89d5a143cf16}{Handle\+Data} (Fair\+M\+Q\+Parts \&msg, int)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint64\+\_\+t \hyperlink{classEventProccessingNode_a882c46266ea3498f6819558d4a0dc204}{f\+Num\+Flp}
+\item 
+uint64\+\_\+t \hyperlink{classEventProccessingNode_ab5b3c88ffab89a6c1fcc2bf01a7aad81}{received\+Messages}
+\item 
+uint64\+\_\+t \hyperlink{classEventProccessingNode_a098a24e60ecde3b62dbef77b1d04cce8}{current\+Heartbeat}
+\item 
+bool \hyperlink{classEventProccessingNode_a19ad46ab049d1956018fd8566fa451fe}{is\+Currently\+Out\+Of\+Order}
+\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const std\+::string \hyperlink{classEventProccessingNode_aff8819ba7eccef81b99760fb5c60179a}{feedback\+Channel} = \char`\"{}feedback\char`\"{}
+\item 
+static const std\+::string \hyperlink{classEventProccessingNode_ad895b2abb002854259ed05ea29e13595}{p\+Number\+Of\+F\+LP} = \char`\"{}num-\/flp\char`\"{}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classEventProccessingNode_a6312a3edf6a8baa7dee9f65c48090fa2}\label{classEventProccessingNode_a6312a3edf6a8baa7dee9f65c48090fa2}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{Event\+Proccessing\+Node()}{EventProccessingNode()}}
+{\footnotesize\ttfamily Event\+Proccessing\+Node\+::\+Event\+Proccessing\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classEventProccessingNode_aecdaccecfbcb665833a206b7aa8e86c5}\label{classEventProccessingNode_aecdaccecfbcb665833a206b7aa8e86c5}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!````~Event\+Proccessing\+Node@{$\sim$\+Event\+Proccessing\+Node}}
+\index{````~Event\+Proccessing\+Node@{$\sim$\+Event\+Proccessing\+Node}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{$\sim$\+Event\+Proccessing\+Node()}{~EventProccessingNode()}}
+{\footnotesize\ttfamily Event\+Proccessing\+Node\+::$\sim$\+Event\+Proccessing\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [default]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classEventProccessingNode_aedf9495467d0596dda9e89d5a143cf16}\label{classEventProccessingNode_aedf9495467d0596dda9e89d5a143cf16}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!Handle\+Data@{Handle\+Data}}
+\index{Handle\+Data@{Handle\+Data}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{Handle\+Data()}{HandleData()}}
+{\footnotesize\ttfamily bool Event\+Proccessing\+Node\+::\+Handle\+Data (\begin{DoxyParamCaption}\item[{Fair\+M\+Q\+Parts \&}]{msg,  }\item[{int}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+s \begin{DoxyReturn}{Returns}
+if the handling of the data was successful 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classEventProccessingNode_aa8693560f7c9496254a06f2ac038fc92}\label{classEventProccessingNode_aa8693560f7c9496254a06f2ac038fc92}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!Init\+Task@{Init\+Task}}
+\index{Init\+Task@{Init\+Task}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{Init\+Task()}{InitTask()}}
+{\footnotesize\ttfamily void Event\+Proccessing\+Node\+::\+Init\+Task (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classEventProccessingNode_a093e1acf1b5be850fb0b8e420eec09ed}\label{classEventProccessingNode_a093e1acf1b5be850fb0b8e420eec09ed}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!Pre\+Run@{Pre\+Run}}
+\index{Pre\+Run@{Pre\+Run}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{Pre\+Run()}{PreRun()}}
+{\footnotesize\ttfamily void Event\+Proccessing\+Node\+::\+Pre\+Run (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [protected]}}
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classEventProccessingNode_a098a24e60ecde3b62dbef77b1d04cce8}\label{classEventProccessingNode_a098a24e60ecde3b62dbef77b1d04cce8}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!current\+Heartbeat@{current\+Heartbeat}}
+\index{current\+Heartbeat@{current\+Heartbeat}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{current\+Heartbeat}{currentHeartbeat}}
+{\footnotesize\ttfamily uint64\+\_\+t Event\+Proccessing\+Node\+::current\+Heartbeat\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classEventProccessingNode_aff8819ba7eccef81b99760fb5c60179a}\label{classEventProccessingNode_aff8819ba7eccef81b99760fb5c60179a}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!feedback\+Channel@{feedback\+Channel}}
+\index{feedback\+Channel@{feedback\+Channel}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{feedback\+Channel}{feedbackChannel}}
+{\footnotesize\ttfamily const std\+::string Event\+Proccessing\+Node\+::feedback\+Channel = \char`\"{}feedback\char`\"{}\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}
+
+Name of the channel an epn will return information about received messages on \mbox{\Hypertarget{classEventProccessingNode_a882c46266ea3498f6819558d4a0dc204}\label{classEventProccessingNode_a882c46266ea3498f6819558d4a0dc204}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!f\+Num\+Flp@{f\+Num\+Flp}}
+\index{f\+Num\+Flp@{f\+Num\+Flp}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{f\+Num\+Flp}{fNumFlp}}
+{\footnotesize\ttfamily uint64\+\_\+t Event\+Proccessing\+Node\+::f\+Num\+Flp\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classEventProccessingNode_a19ad46ab049d1956018fd8566fa451fe}\label{classEventProccessingNode_a19ad46ab049d1956018fd8566fa451fe}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!is\+Currently\+Out\+Of\+Order@{is\+Currently\+Out\+Of\+Order}}
+\index{is\+Currently\+Out\+Of\+Order@{is\+Currently\+Out\+Of\+Order}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{is\+Currently\+Out\+Of\+Order}{isCurrentlyOutOfOrder}}
+{\footnotesize\ttfamily bool Event\+Proccessing\+Node\+::is\+Currently\+Out\+Of\+Order\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classEventProccessingNode_ad895b2abb002854259ed05ea29e13595}\label{classEventProccessingNode_ad895b2abb002854259ed05ea29e13595}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!p\+Number\+Of\+F\+LP@{p\+Number\+Of\+F\+LP}}
+\index{p\+Number\+Of\+F\+LP@{p\+Number\+Of\+F\+LP}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{p\+Number\+Of\+F\+LP}{pNumberOfFLP}}
+{\footnotesize\ttfamily const std\+::string Event\+Proccessing\+Node\+::p\+Number\+Of\+F\+LP = \char`\"{}num-\/flp\char`\"{}\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}
+
+Number of F\+LP command line argument, used to set f\+Num\+Flp variable \mbox{\Hypertarget{classEventProccessingNode_ab5b3c88ffab89a6c1fcc2bf01a7aad81}\label{classEventProccessingNode_ab5b3c88ffab89a6c1fcc2bf01a7aad81}} 
+\index{Event\+Proccessing\+Node@{Event\+Proccessing\+Node}!received\+Messages@{received\+Messages}}
+\index{received\+Messages@{received\+Messages}!Event\+Proccessing\+Node@{Event\+Proccessing\+Node}}
+\subsubsection{\texorpdfstring{received\+Messages}{receivedMessages}}
+{\footnotesize\ttfamily uint64\+\_\+t Event\+Proccessing\+Node\+::received\+Messages\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/user/\+O2-\/\+Balancer2/epn/include/\hyperlink{epn_8h}{epn.\+h}\item 
+/home/user/\+O2-\/\+Balancer2/epn/src/\hyperlink{epn_8cxx}{epn.\+cxx}\end{DoxyCompactItemize}
