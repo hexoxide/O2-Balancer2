@@ -28,13 +28,14 @@ class InformationControlNode : public FairMQDevice
 
     void ListenForFeedback();
     std::thread feedbackListener;
+    // bool HandleFeedback(FairMQParts&, int);
 
-    // void ExitDevice();
-    // std::thread exitDevice;
-
-    uint64_t numHeartbeat;    
-    std::vector<O2Channel> channels;
-    bool isConfigure;
+    uint64_t numHeartbeat;
+    uint64_t numAcknowledge;
+    // TODO std::unique_ptr
+    std::vector<O2Channel*> channels;
+    std::atomic<bool> isConfigure;
+    std::atomic<bool> isPreConfigure;
     std::chrono::system_clock::time_point startTime;
 };
 

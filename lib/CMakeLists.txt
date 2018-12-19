@@ -1,9 +1,11 @@
 project(O2)
 
-set(LIB_O2_SRC 
+set(LIB_O2_SRC
+	src/clone.cxx
 )
 
-set(LIB_O2_HEADERS
+set(LIB_O2_HEADERS.
+	include/clone.h
 	include/o2channel.h 
 	include/o2data.h
 )

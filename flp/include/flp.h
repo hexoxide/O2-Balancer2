@@ -19,6 +19,8 @@ class FirstLineProccessing : public FairMQDevice
 
     bool HandleBroadcast(FairMQParts&, int);
 
+    void reinitialize();
+
     uint64_t fTextSize;
 
   	std::unique_ptr<char[]> text;
