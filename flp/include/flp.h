@@ -6,6 +6,7 @@
 #include <string>
 
 #include "FairMQDevice.h"
+#include "zookeeper/zookeeper.h"
 
 class FirstLineProccessing : public FairMQDevice
 {
@@ -21,9 +22,9 @@ class FirstLineProccessing : public FairMQDevice
     void get_task_data(const char *);
     void get_task_data_completion(int rc, const char *value, int value_len, const struct Stat *stat, const void *data);
     void assign_tasks(const struct String_vector *strings);
-    void FirstLineProccessing::get_epns();
-    void FirstLineProccessing::epn_watcher (zhandle_t *zh, int type, int state, const char *path, void *watcherCtx);
-    void FirstLineProccessing::epn_completion (int rc, const struct String_vector *strings, const void *data);
+    void get_epns();
+    void epn_watcher (zhandle_t *zh, int type, int state, const char *path, void *watcherCtx);
+    void epn_completion (int rc, const struct String_vector *strings, const void *data);
 
     uint64_t fTextSize;
 
