@@ -29,15 +29,16 @@ before_install:
   - cd depdendency
   - git checkout O2v2
   - git submodule update --init --recursive
-  - ./install-dependencies.sh
+  - ./install-dependencies.sh > dependencies-report.txt
 script: 
   - cd ${TRAVIS_BUILD_DIR}
   - if [ ! -d "build" ]; then mkdir build; fi
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_CODECOV=true ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_CODECOV=true -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
   - make -j 2
 after_success:
   - cd ${TRAVIS_BUILD_DIR}/build
+  - sudo python ../tests/run-clang-tidy.py -header-filter='.*' -checks='modernize*'
   - make coverage
   - lcov --directory . --capture --output-file coverage.info # capture coverage info
   - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
