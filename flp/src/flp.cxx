@@ -74,7 +74,6 @@ char * make_path(int num, ...) {
     return path;
     }
 
-void FirstLineProccessing::get_task_data(const char *);
 void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
                               const struct Stat *stat, const void *data) {
     //int worker_index;
@@ -87,6 +86,7 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
             break;
 
         case ZOK:
+        {
             char* nodeName = (char *) data;
             char* nodeValue = strndup(value, value_len); 
             isReconfiguringChannels = true;
@@ -162,14 +162,14 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
                                             text.get()));
 
             Send(msgsend, currentChannel, 0, 0); // send async
-
+        }
             break;
-        default:
-            //LOG_ERROR(("Something went wrong when checking the master lock: %s",rc2string(rc)));
-            break;
+        // default:
+        //     //LOG_ERROR(("Something went wrong when checking the master lock: %s",rc2string(rc)));
+        //     break;
     }
 }
-void FirstLineProccessing::get_task_data(const char *task) {
+static void FirstLineProccessing::get_task_data(const char *task) {
     if(task == NULL) return;
 
     //LOG_DEBUG(("Task path: %s",task));
@@ -196,7 +196,6 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     }
 }
 
-void FirstLineProccessing::get_epns();
 void FirstLineProccessing::epn_watcher (zhandle_t *zh,
                     int type,
                     int state,
@@ -244,7 +243,7 @@ void FirstLineProccessing::epn_completion (int rc,
 	}
 }
 //asynch retrieev epn and place watcher
-void FirstLineProccessing::get_epns () {
+static void FirstLineProccessing::get_epns () {
 	printf("Getting tasks\n");
 		zoo_awget_children(zh,
 						"/EPN",
