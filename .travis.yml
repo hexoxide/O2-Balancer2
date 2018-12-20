@@ -38,7 +38,7 @@ script:
   - make -j 2
 after_success:
   - cd ${TRAVIS_BUILD_DIR}/build
-  - doxygen doxygen.cnf > /dev/null
+  - doxygen doxygen.cnf | echo > /dev/null
   - sudo python ../tests/run-clang-tidy.py -header-filter='.*' -checks='modernize*'
   - make coverage
   - lcov --directory . --capture --output-file coverage.info # capture coverage info
