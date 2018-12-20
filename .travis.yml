@@ -31,14 +31,15 @@ before_install:
   - cd depdendency
   - git checkout O2v2
   - git submodule update --init --recursive
-  - ./install-dependencies.sh > dependencies-report.txt
+  - ./install-dependencies.sh
 script: 
   - cd ${TRAVIS_BUILD_DIR}
   - if [ ! -d "build" ]; then mkdir build; fi
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_CODECOV=true -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TRAVIS=true -DENABLE_CODECOV=true -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
   - make -j 2
   - cd ${TRAVIS_BUILD_DIR}/build
+  - doxygen doxygen.cnf | echo > /dev/null
   - sudo python ../tests/run-clang-tidy.py -header-filter='.*' -checks='modernize*'
   - make coverage
 after_success:

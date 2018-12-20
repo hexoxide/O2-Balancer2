@@ -20,6 +20,7 @@ use_cxx_warning_pedantic()
 OPTION(ENABLE_TESTS "Enable unit tests" ON)
 OPTION(ENABLE_CODECOV "Measure code coverage" OFF)
 OPTION(ENABLE_DOXY "Generate documentation" ON)
+OPTION(ENALBE_TRAVIS "If this build is being run on travis.ci" OFF)
 
 # Required packages
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -72,7 +73,7 @@ if(ENABLE_CODECOV)
 	setup_target_for_coverage(coverage testexample coverage)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 	set(ENABLE_TESTS ON) # tests need to be enabled for code coverage
-	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+	if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 		message(WARNING "Forcing buld type to Debug to allow code coverage!")
 		set(CMAKE_BUILD_TYPE Debug) # debug needed to disable compilter optimization
 	endif()
@@ -110,20 +111,22 @@ if(ENABLE_DOXY)
 	find_package(Doxygen)
 	if (DOXYGEN_FOUND)
 	    # set input and output files
-	    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
-	    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+	    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.cnf)
+	    set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/doxygen.cnf)
 
 	    # request to configure the file
 	    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 	    message("O2B2: Doxygen build started")
 
 	    # note the option ALL which allows to build the docs together with the application
-	    add_custom_target( doc_doxygen ALL
-		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		COMMENT "Generating API documentation with Doxygen"
-		VERBATIM )
+	    if(NOT ENABLE_TRAVIS)
+	    	add_custom_target(doc_doxygen ALL
+			COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			COMMENT "Generating API documentation with Doxygen"
+			VERBATIM )
+	    endif(NOT ENABLE_TRAVIS)
 	else (DOXYGEN_FOUND)
-	  message("O2B2: Doxygen need to be installed to generate the doxygen documentation")
+	  message("O2B2: Doxygen needs to be installed to generate the doxygen documentation")
 	endif (DOXYGEN_FOUND)
 endif()
