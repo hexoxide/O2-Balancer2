@@ -169,7 +169,7 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
         //     break;
     }
 }
-static void FirstLineProccessing::get_task_data(const char *task) {
+void FirstLineProccessing::get_task_data(const char *task) {
     if(task == NULL) return;
 
     //LOG_DEBUG(("Task path: %s",task));
@@ -243,7 +243,7 @@ void FirstLineProccessing::epn_completion (int rc,
 	}
 }
 //asynch retrieev epn and place watcher
-static void FirstLineProccessing::get_epns () {
+void FirstLineProccessing::get_epns () {
 	printf("Getting tasks\n");
 		zoo_awget_children(zh,
 						"/EPN",

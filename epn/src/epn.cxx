@@ -55,7 +55,7 @@ EventProccessingNode::EventProccessingNode()
 		//return errno;
 	}
 
-	int rc = zoo_create(zh,"/epn", address, 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
+	int rc = zoo_create(zh,"/epn", address.c_str(), 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
 						buffer, sizeof(buffer)-1);
 }
 
