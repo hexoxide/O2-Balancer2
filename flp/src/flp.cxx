@@ -176,7 +176,7 @@ void FirstLineProccessing::get_task_data(const char *task) {
     char * tmp_task = strndup(task, 15);
     char * path = make_path(2, "/EPN/", tmp_task);
     //LOG_DEBUG(("Getting task data %s",tmp_task));
-    data_completion_t get_task_data_completion_bound = std::bind(&FirstLineProccessing::get_task_data_completion, this, _1, _2, _3, _4, _5);
+    data_completion_t get_task_data_completion_bound = <decltype( std::bind(&FirstLineProccessing::get_task_data_completion, this, _1, _2, _3, _4, _5) )>();
     zoo_aget(zh,
              path,
              0,
