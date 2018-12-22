@@ -74,94 +74,94 @@ char * make_path(int num, ...) {
     return path;
     }
 
-void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
+static void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
                               const struct Stat *stat, const void *data) {
     //int worker_index;
 
     switch (rc) {
         case ZCONNECTIONLOSS:
         case ZOPERATIONTIMEOUT:
-            get_task_data((const char *) data);
+            //get_task_data((const char *) data);
 
             break;
 
         case ZOK:
         {
-            char* nodeName = (char *) data;
-            char* nodeValue = strndup(value, value_len); 
-            isReconfiguringChannels = true;
-            LOG(trace) << "Configuring";
-            // printf("key: \t");
-            // printf("%s\n", nodeName);
-            // printf("value \t");
-            // printf("%s\n", nodeValue);
-            //new fairqm channel with name data  and port and ip in value
-                    // Add channels to device based on O2Channel message part data
-            FairMQChannel channel("push", "connect", strndup(value, value_len));
-            LOG(trace) << "Configure packet:" << nodeName << " - " << nodeValue;
-            channel.UpdateRateLogging(1);
-            channel.ValidateChannel();
-            AddChannel(nodeName, channel);
+            // char* nodeName = (char *) data;
+            // char* nodeValue = strndup(value, value_len); 
+            // isReconfiguringChannels = true;
+            // LOG(trace) << "Configuring";
+            // // printf("key: \t");
+            // // printf("%s\n", nodeName);
+            // // printf("value \t");
+            // // printf("%s\n", nodeValue);
+            // //new fairqm channel with name data  and port and ip in value
+            //         // Add channels to device based on O2Channel message part data
+            // FairMQChannel channel("push", "connect", strndup(value, value_len));
+            // LOG(trace) << "Configure packet:" << nodeName << " - " << nodeValue;
+            // channel.UpdateRateLogging(1);
+            // channel.ValidateChannel();
+            // AddChannel(nodeName, channel);
             
-            // Device re-initialization to configure new channels
-            isReinitializing = false;
-            currentReconfigureStep = 1;
-            SubscribeToStateChange(stateChangeHook, [&](const State curState){
-                // Step 1
-                if(!isReinitializing) {
-                    LOG(trace) << "Breaking down";
-                    if(curState == READY && currentReconfigureStep == 1) 
-                    {
-                        currentReconfigureStep = 2;
-                        LOG(trace) << "DOWN step 1 - Current state is ready";
-                        ChangeState("RESET_TASK");
-                        // WaitForEndOfStateForMs("RESET_TASK", 1);
-                    }
-                    // Step 2
-                    if(curState == DEVICE_READY && currentReconfigureStep == 2)
-                    {
-                        currentReconfigureStep = 3;
-                        LOG(trace) << "DOWN step 2 - Current state is device ready";
-                        ChangeState("RESET_DEVICE");
-                        //WaitForEndOfStateForMs("RESET_DEVICE", 1);
-                    }
-                    // Step 3
-                    if(curState == IDLE && currentReconfigureStep == 3)
-                    {
-                        currentReconfigureStep = 4;
-                        LOG(trace) << "DOWN step 3 - Current state is idle";
-                        isReinitializing = true;
-                        ChangeState("INIT_DEVICE");
-                        // WaitForEndOfStateForMs("INIT_DEVICE", 1);
-                    }
-                }
-                else {
-                    LOG(trace) << "Building up";
-                    // step 4
-                    if(curState == DEVICE_READY && currentReconfigureStep == 4) {
-                        currentReconfigureStep = 5;
-                        LOG(trace) << "UP step 4 - Current state is device ready";
-                        ChangeState("INIT_TASK");
-                        // WaitForEndOfStateForMs("INIT_TASK", 1);
-                    }
-                    // step 5
-                    if(curState == READY && currentReconfigureStep == 5) {
-                        currentReconfigureStep = 6;
-                        LOG(trace) << "UP step 5 - Current state is ready";
-                        ChangeState("RUN");
-                    }
-                }
-            });
+            // // Device re-initialization to configure new channels
+            // isReinitializing = false;
+            // currentReconfigureStep = 1;
+            // SubscribeToStateChange(stateChangeHook, [&](const State curState){
+            //     // Step 1
+            //     if(!isReinitializing) {
+            //         LOG(trace) << "Breaking down";
+            //         if(curState == READY && currentReconfigureStep == 1) 
+            //         {
+            //             currentReconfigureStep = 2;
+            //             LOG(trace) << "DOWN step 1 - Current state is ready";
+            //             ChangeState("RESET_TASK");
+            //             // WaitForEndOfStateForMs("RESET_TASK", 1);
+            //         }
+            //         // Step 2
+            //         if(curState == DEVICE_READY && currentReconfigureStep == 2)
+            //         {
+            //             currentReconfigureStep = 3;
+            //             LOG(trace) << "DOWN step 2 - Current state is device ready";
+            //             ChangeState("RESET_DEVICE");
+            //             //WaitForEndOfStateForMs("RESET_DEVICE", 1);
+            //         }
+            //         // Step 3
+            //         if(curState == IDLE && currentReconfigureStep == 3)
+            //         {
+            //             currentReconfigureStep = 4;
+            //             LOG(trace) << "DOWN step 3 - Current state is idle";
+            //             isReinitializing = true;
+            //             ChangeState("INIT_DEVICE");
+            //             // WaitForEndOfStateForMs("INIT_DEVICE", 1);
+            //         }
+            //     }
+            //     else {
+            //         LOG(trace) << "Building up";
+            //         // step 4
+            //         if(curState == DEVICE_READY && currentReconfigureStep == 4) {
+            //             currentReconfigureStep = 5;
+            //             LOG(trace) << "UP step 4 - Current state is device ready";
+            //             ChangeState("INIT_TASK");
+            //             // WaitForEndOfStateForMs("INIT_TASK", 1);
+            //         }
+            //         // step 5
+            //         if(curState == READY && currentReconfigureStep == 5) {
+            //             currentReconfigureStep = 6;
+            //             LOG(trace) << "UP step 5 - Current state is ready";
+            //             ChangeState("RUN");
+            //         }
+            //     }
+            // });
             
-            // end of reconfigure
-            //this will have to be implemented in the run method (we still have to listen to heartbeats)
+            // // end of reconfigure
+            // //this will have to be implemented in the run method (we still have to listen to heartbeats)
 
-            FairMQMessagePtr msgsend(NewMessage(text.get(),
-                                            fTextSize,
-                                            [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                            text.get()));
+            // FairMQMessagePtr msgsend(NewMessage(text.get(),
+            //                                 fTextSize,
+            //                                 [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+            //                                 text.get()));
 
-            Send(msgsend, currentChannel, 0, 0); // send async
+            // Send(msgsend, currentChannel, 0, 0); // send async
         }
             break;
         // default:
@@ -180,9 +180,7 @@ void FirstLineProccessing::get_task_data(const char *task) {
     zoo_aget(zh,
              path,
              0,
-             [this]((int rc, const char *value, int value_len, const struct Stat *stat, const void *data)) {
-                this->get_task_data_completion(std::move(rc), std::move(value), std::move(value_len), std::move(stat), std::move(data));
-             },
+             FirstLineProccessing::get_task_data_completion,
              (const void *) tmp_task);
     free(path);
 }
