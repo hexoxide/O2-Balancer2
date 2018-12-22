@@ -26,18 +26,18 @@ class FirstLineProccessing : public FairMQDevice
     static void epn_watcher (zhandle_t *zh, int type, int state, const char *path, void *watcherCtx);
     static void epn_completion (int rc, const struct String_vector *strings, const void *data);
 
-    uint64_t fTextSize;
+    static uint64_t fTextSize;
 
-  	std::unique_ptr<char[]> text;
+  	static std::unique_ptr<char[]> text;
     
     // used to reinitialize channels
-    const std::string stateChangeHook;
-    std::atomic<bool> isReconfiguringChannels;
-    std::atomic<bool> isReinitializing;
-    std::atomic<uint8_t> currentReconfigureStep;
+    static const std::string stateChangeHook;
+    static std::atomic<bool> isReconfiguringChannels;
+    static std::atomic<bool> isReinitializing;
+    static std::atomic<uint8_t> currentReconfigureStep;
 
     uint64_t lastHeartbeat;
-    std::string currentChannel;
+    static std::string currentChannel;
 };
 
 #endif /* FLP_H */
