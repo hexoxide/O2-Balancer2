@@ -176,11 +176,13 @@ void FirstLineProccessing::get_task_data(const char *task) {
     char * tmp_task = strndup(task, 15);
     char * path = make_path(2, "/EPN/", tmp_task);
     //LOG_DEBUG(("Getting task data %s",tmp_task));
-    data_completion_t get_task_data_completion_bound = <decltype( std::bind(&FirstLineProccessing::get_task_data_completion, this, _1, _2, _3, _4, _5) )>();
+    //data_completion_t get_task_data_completion_bound = <decltype( std::bind(&FirstLineProccessing::get_task_data_completion, this, _1, _2, _3, _4, _5) )>();
     zoo_aget(zh,
              path,
              0,
-             get_task_data_completion_bound,
+             [this]((int rc, const char *value, int value_len, const struct Stat *stat, const void *data)) {
+                this->get_task_data_completion(std::move(rc), std::move(value), std::move(value_len), std::move(stat), std::move(data));
+             },
              (const void *) tmp_task);
     free(path);
 }
