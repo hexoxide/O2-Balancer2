@@ -74,14 +74,14 @@ char * make_path(int num, ...) {
     return path;
     }
 
-static void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
+void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
                               const struct Stat *stat, const void *data) {
     //int worker_index;
 
     switch (rc) {
         case ZCONNECTIONLOSS:
         case ZOPERATIONTIMEOUT:
-            //get_task_data((const char *) data);
+            get_task_data((const char *) data);
 
             break;
 
@@ -183,6 +183,7 @@ void FirstLineProccessing::get_task_data(const char *task) {
              FirstLineProccessing::get_task_data_completion,
              (const void *) tmp_task);
     free(path);
+    free(tmp_task);
 }
 void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     /*

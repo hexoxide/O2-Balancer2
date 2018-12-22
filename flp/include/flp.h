@@ -19,7 +19,7 @@ class FirstLineProccessing : public FairMQDevice
     void PreRun() override;
 
     //bool HandleBroadcast(FairMQParts&, int);
-    void get_task_data(const char *);
+    static void get_task_data(const char *);
     static void get_task_data_completion(int rc, const char *value, int value_len, const struct Stat *stat, const void *data);
     void assign_tasks(const struct String_vector *strings);
     void get_epns();
