@@ -2,7 +2,7 @@
 
 #include <random>
 
-#include "o2data.h"
+#include "data/o2data.h"
 
 using namespace std;
 

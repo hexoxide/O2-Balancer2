@@ -10,5 +10,4 @@ CloneAble* CloneAble::doClone()
 	return new CloneAble(*this);
 }
 
-CloneAble::~CloneAble()
-= default;
+CloneAble::~CloneAble() = default;

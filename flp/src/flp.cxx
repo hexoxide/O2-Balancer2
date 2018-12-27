@@ -1,7 +1,8 @@
 #include "flp.h"
 
-#include "o2data.h"
-#include "o2channel.h"
+#include "linux-interface.h"
+#include "data/o2data.h"
+#include "data/o2channel.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ FirstLineProccessing::FirstLineProccessing()
     , currentChannel("1")
 {
     OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
+    getInterfaceAddress("enp0s3");
 }
 
 bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)

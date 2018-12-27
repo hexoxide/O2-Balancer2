@@ -2,13 +2,12 @@
 #define BOOST_TEST_MODULE TestEpn
 
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 #include <string>
 
 #include "epn.h"
 
-#include "o2data.h"
-#include "o2channel.h"
+#include "data/o2data.h"
+#include "data/o2channel.h"
 
 using namespace std;
 

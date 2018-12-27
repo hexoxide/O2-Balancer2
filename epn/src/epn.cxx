@@ -1,7 +1,7 @@
 #include "epn.h"
 
-#include "o2data.h"
-#include "o2channel.h"
+#include "data/o2data.h"
+#include "data/o2channel.h"
 
 using namespace std;
 

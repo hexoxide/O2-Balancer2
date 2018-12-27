@@ -33,7 +33,6 @@ find_package(Zookeeper REQUIRED)
 find_package(
     Boost 1.59 COMPONENTS
     system
-    timer
     program_options
     filesystem
     chrono
@@ -41,7 +40,6 @@ find_package(
     serialization
     log
     log_setup
-    unit_test_framework
     date_time
     REQUIRED
 )

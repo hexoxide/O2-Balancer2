@@ -2,10 +2,9 @@
 #define BOOST_TEST_MODULE TestExample
 
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 #include <string>
 
-#include "o2data.h"
+#include "data/o2data.h"
 
 BOOST_AUTO_TEST_SUITE(Test_Example)
 

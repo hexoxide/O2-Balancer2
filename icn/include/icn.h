@@ -10,7 +10,7 @@
 #include "FairMQDevice.h"
 
 // Local
-#include "o2channel.h"
+#include "data/o2channel.h"
 
 class InformationControlNode : public FairMQDevice
 {
