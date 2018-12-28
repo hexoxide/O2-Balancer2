@@ -1,18 +1,24 @@
 #include "epn.h"
 
+#include "linux-interface.h"
 #include "data/o2data.h"
 #include "data/o2channel.h"
 
 using namespace std;
+using namespace O2::data;
 
 /** Name of the channel an epn will return information about received messages on */
 const std::string EventProccessingNode::feedbackChannel = "feedback";
 
-/** Number of FLP command line argument, used to set fNumFlp variable */
+/** Number of FLP's the EPN will expect to be in the network */
 const std::string EventProccessingNode::pNumberOfFLP = "num-flp";
+
+/** The primary network interface to use while performing load balancing experiments */
+const std::string EventProccessingNode::pPrimaryNetworkInterface = "primary-interface";
 
 EventProccessingNode::EventProccessingNode()
     : fNumFlp(0)
+    , fPrimaryNetworkInterface("")
     , receivedMessages(0)
     , currentHeartbeat(0)
     , isCurrentlyOutOfOrder(false)
@@ -24,6 +30,8 @@ void EventProccessingNode::InitTask()
     // register a handler for data arriving on "data" channel
     OnData(fConfig->GetValue<std::string>("id"), &EventProccessingNode::HandleData);
     fNumFlp = fConfig->GetValue<uint64_t>(pNumberOfFLP);
+    fPrimaryNetworkInterface = fConfig->GetValue<std::string>(pPrimaryNetworkInterface);
+    LOG(TRACE) << O2::network::getInterfaceAddress(fPrimaryNetworkInterface);
 }
 
 void EventProccessingNode::PreRun()

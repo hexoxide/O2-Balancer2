@@ -33,7 +33,7 @@ class InformationControlNode : public FairMQDevice
     uint64_t numHeartbeat;
     uint64_t numAcknowledge;
     // TODO std::unique_ptr
-    std::vector<O2Channel*> channels;
+    std::vector<O2::data::O2Channel*> channels;
     std::atomic<bool> isConfigure;
     std::atomic<bool> isPreConfigure;
     std::chrono::system_clock::time_point startTime;

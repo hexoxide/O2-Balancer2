@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <string>
 
+namespace O2 {
+namespace data {
+
 struct O2Ip {
 	uint8_t		ip1;
 	uint8_t		ip2;
@@ -12,5 +15,8 @@ struct O2Ip {
 	O2Ip();
 	operator std::string();
 };
+
+} // data
+} // O2
 
 #endif // O2IP

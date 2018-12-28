@@ -6,6 +6,8 @@
 
 #include "data/o2data.h"
 
+using namespace O2::data;
+
 BOOST_AUTO_TEST_SUITE(Test_Example)
 
 BOOST_AUTO_TEST_CASE(TestExample) {

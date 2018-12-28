@@ -6,6 +6,8 @@
 
 #include "data/o2channel.h"
 
+using namespace O2::data;
+
 BOOST_AUTO_TEST_SUITE(Test_O2Channel)
 
 BOOST_AUTO_TEST_CASE(TestO2ChannelMininum) {

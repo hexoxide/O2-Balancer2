@@ -10,6 +10,7 @@
 #include "data/o2channel.h"
 
 using namespace std;
+using namespace O2::data;
 
 BOOST_AUTO_TEST_SUITE(Test_Epn)
 

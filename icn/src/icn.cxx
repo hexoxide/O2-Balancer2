@@ -5,6 +5,7 @@
 #include "data/o2data.h"
 
 using namespace std;
+using namespace O2::data;
 
 InformationControlNode::InformationControlNode()
 	: fIterations(0)

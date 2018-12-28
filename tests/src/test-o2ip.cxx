@@ -6,6 +6,8 @@
 
 #include "data/o2ip.h"
 
+using namespace O2::data;
+
 BOOST_AUTO_TEST_SUITE(Test_O2Ip)
 
 BOOST_AUTO_TEST_CASE(TestO2IpMinimum) {
