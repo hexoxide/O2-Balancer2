@@ -13,6 +13,7 @@ set(LIB_O2_HEADERS.
 	include/data/o2data.h
 	include/data/o2ip.h
 	include/linux-interface.h
+	include/o2exception.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/data)

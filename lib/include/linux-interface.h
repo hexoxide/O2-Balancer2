@@ -15,6 +15,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "o2exception.h"
+
 namespace O2 {
 namespace network {
 

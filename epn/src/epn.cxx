@@ -1,6 +1,7 @@
 #include "epn.h"
 
 #include "linux-interface.h"
+#include "o2exception.h"
 #include "data/o2data.h"
 #include "data/o2channel.h"
 
@@ -48,7 +49,12 @@ void EventProccessingNode::PreRun()
                             firstPacket));
     // TODO ask kernel nicely for ip address try not to use unreadable C examples.
     auto  s2 = new O2Channel();
-    s2->index = stoll(fConfig->GetValue<std::string>("id"));
+    try {
+        s2->index = stoll(fConfig->GetValue<std::string>("id"));
+    }
+    catch(std::exception& e) {
+        throw O2::exception::O2Exception(e.what(), __FILE__, __LINE__);
+    }
     s2->ip1 = 127;
     s2->ip2 = 0;
     s2->ip3 = 0;

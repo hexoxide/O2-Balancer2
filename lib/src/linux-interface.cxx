@@ -1,19 +1,20 @@
 #include "linux-interface.h"
 
+using namespace O2::exception;
+
 namespace O2 {
 namespace network {
 
 	std::string getInterfaceAddress(std::string interfaceName) {
-		std::string ip = "";
+		std::string ip = std::string();
 		struct ifaddrs *ifaddr, *ifa;
-	    int s;
-	    char host[NI_MAXHOST];
+	    int s = 0;
+	    char host[NI_MAXHOST] = {};
 
 	    if (getifaddrs(&ifaddr) == -1) 
 	    {
 	        throw std::runtime_error("Could not open network interface");
 	    }
-
 
 	    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) 
 	    {
@@ -26,11 +27,15 @@ namespace network {
 	        {
 	            if (s != 0)
 	            {
-	                throw std::runtime_error("Interface does not have ipv4 address attribute (AF_INET)");
+	                throw O2Exception("Could not read AF_INET for network interface", __FILE__, __LINE__);
 	            }
 	            ip = std::string(host);
 	        }
 	    }
+
+	    if(ip.empty())
+	    	throw O2Exception("Could not retrieve AF_INET for interface: " + interfaceName, __FILE__, __LINE__);
+
 	    freeifaddrs(ifaddr);
 	   	return ip;
 	}
