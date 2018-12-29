@@ -7,6 +7,7 @@
 
 using namespace std;
 using namespace O2::data;
+using namespace O2::exception;
 
 /** Name of the channel an epn will return information about received messages on */
 const std::string EventProccessingNode::feedbackChannel = "feedback";
@@ -32,7 +33,6 @@ void EventProccessingNode::InitTask()
     OnData(fConfig->GetValue<std::string>("id"), &EventProccessingNode::HandleData);
     fNumFlp = fConfig->GetValue<uint64_t>(pNumberOfFLP);
     fPrimaryNetworkInterface = fConfig->GetValue<std::string>(pPrimaryNetworkInterface);
-    LOG(TRACE) << O2::network::getInterfaceAddress(fPrimaryNetworkInterface);
 }
 
 void EventProccessingNode::PreRun()
@@ -48,18 +48,15 @@ void EventProccessingNode::PreRun()
                             [](void* /*data*/, void* object) { delete static_cast<O2Data*>(object); },
                             firstPacket));
     // TODO ask kernel nicely for ip address try not to use unreadable C examples.
-    auto  s2 = new O2Channel();
+    auto  s2 = new O2Channel(O2::network::getInterfaceAddress(fPrimaryNetworkInterface));
     try {
         s2->index = stoll(fConfig->GetValue<std::string>("id"));
     }
     catch(std::exception& e) {
-        throw O2::exception::O2Exception(e.what(), __FILE__, __LINE__);
+        throw O2Exception(e.what(), __FILE__, __LINE__);
     }
-    s2->ip1 = 127;
-    s2->ip2 = 0;
-    s2->ip3 = 0;
-    s2->ip4 = 1;
     s2->port = 5555;
+    LOG(TRACE) << "EPN will send the following channel confguration to ICN: " << std::string(*s2);
     void* data2 = s2;
     parts.AddPart(NewMessage(data2, 
                             sizeof(O2Channel),

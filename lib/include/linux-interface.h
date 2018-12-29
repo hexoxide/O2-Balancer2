@@ -12,15 +12,15 @@
 #include <string.h>
 
 // cxx headers
-#include <stdexcept>
 #include <string>
 
+#include "data/o2ip.h"
 #include "o2exception.h"
 
 namespace O2 {
 namespace network {
 
-std::string getInterfaceAddress(std::string interfaceName);
+O2::data::O2Ip getInterfaceAddress(std::string interfaceName);
 
 }
 }

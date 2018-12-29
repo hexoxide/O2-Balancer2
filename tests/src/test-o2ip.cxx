@@ -46,4 +46,43 @@ BOOST_AUTO_TEST_CASE(TestO2IpMaximum) {
 	BOOST_CHECK(std::string(test) == "255.255.255.255");
 }
 
+BOOST_AUTO_TEST_CASE(TestO2IpStringInternal) {
+	auto test = O2Ip("192.168.0.1");
+	BOOST_CHECK(std::string(test) == "192.168.0.1");
+}
+
+BOOST_AUTO_TEST_CASE(TestO2IpStringMinumum) {
+	auto test = O2Ip("0.0.0.0");
+	BOOST_CHECK(std::string(test) == "0.0.0.0");
+}
+
+BOOST_AUTO_TEST_CASE(TestO2IpStringMaximum) {
+	auto test = O2Ip("255.255.255.255");
+	BOOST_CHECK(std::string(test) == "255.255.255.255");
+}
+
+BOOST_AUTO_TEST_CASE(TestO2IpStringExceptionOverflow) {
+	bool hadException = false;
+	try {
+		auto test = O2Ip("256.256.256.256");
+		if(test.ip1 == 0) {} // -Werror=unused-variable
+	}
+	catch(std::exception& e) {
+		hadException = true;
+	}
+	BOOST_CHECK(hadException == true);
+}
+
+BOOST_AUTO_TEST_CASE(TestO2IpStringExceptionUnderflow) {
+	bool hadException = false;
+	try {
+		auto test = O2Ip("-1.-1.-1.-1");
+		if(test.ip1 == 0) {} // -Werror=unused-variable
+	}
+	catch(std::exception& e) {
+		hadException = true;
+	}
+	BOOST_CHECK(hadException == true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

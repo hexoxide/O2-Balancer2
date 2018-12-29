@@ -13,6 +13,7 @@ struct O2Channel : O2Ip {
 	uint64_t	index;
 	uint16_t	port;
 	O2Channel();
+	O2Channel(O2Ip ip);
 	operator std::string();
 };
 
