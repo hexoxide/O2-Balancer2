@@ -19,6 +19,7 @@ addons:
       - clang
       - clang-tidy
       - doxygen
+      - graphviz
       - automake
       - autoconf
       - zookeeper

@@ -20,8 +20,8 @@ git checkout O2v2
 su root
 apt update
 apt upgrade
-apt install sudo gcc git wget htop make icu-devtools python python-dev ant libcppunit-dev 
-apt install doxygen automake autoconf libtool zookeeper libzookeeper-mt-dev
+apt install sudo gcc git wget htop make icu-devtools python python-dev ant libcppunit-dev
+apt install doxygen graphviz automake autoconf libtool zookeeper libzookeeper-mt-dev
 ./install-dependencies.sh
 ```
 
