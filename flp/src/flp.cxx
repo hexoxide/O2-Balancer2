@@ -72,7 +72,7 @@ char * make_path(int num, ...) {
     }
 
     return path;
-    }
+}
 
 void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
                               const struct Stat *stat, const void *data) {
@@ -199,15 +199,21 @@ void FirstLineProccessing::get_epns () {
 						NULL);
 }
 
+std::map<int, std::string> FirstLineProccessing::listOfEpns;
+bool FirstLineProccessing::epnsChanged = false;
+int FirstLineProccessing::numberOfNewEpns = 0;
+int FirstLineProccessing::numberOfNewEpnsRetrieved = 0;
+
+uint64_t FirstLineProccessing::fTextSize = 0;
+std::unique_ptr<char[]> FirstLineProccessing::text = nullptr;
+const std::string FirstLineProccessing::stateChangeHook = "hook";
+std::atomic<bool> FirstLineProccessing::isReconfiguringChannels = false;
+std::atomic<bool> FirstLineProccessing::isReinitializing = false;
+std::atomic<uint8_t> FirstLineProccessing::currentReconfigureStep = 0;
+
+std::string FirstLineProccessing::currentChannel = 1;
+
 FirstLineProccessing::FirstLineProccessing()
-    : fTextSize(0)
-    , text(nullptr)
-    , stateChangeHook("hook")
-    , isReconfiguringChannels(false)
-    , isReinitializing(false)
-    , currentReconfigureStep(0)
-    , lastHeartbeat(0)
-    , currentChannel("1")
 {
     //OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
     char buffer[512];
@@ -253,7 +259,7 @@ bool FirstLineProccessing::ConditionalRun(){
             LOG(trace) << "Configure packet:" << it->first << " - " << it->second;
             channel.UpdateRateLogging(1);
             channel.ValidateChannel();
-            AddChannel(it->first, channel);
+            AddChannel(to_string(it->first), channel);
         }
         
         // Device re-initialization to configure new channels
