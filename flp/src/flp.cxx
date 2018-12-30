@@ -136,6 +136,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
             numberOfNewEpns += 1;
             get_task_data( strings->data[i] );
         }
+        epnsChanged = true;
     }
 }
 
@@ -171,7 +172,6 @@ void FirstLineProccessing::epn_completion (int rc,
 		case ZOK:
 		{
 			printf("!epns list updated!\n");
-            epnsChanged = true;
             numberOfNewEpns = 0;
             numberOfNewEpnsRetrieved = 0;
 			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
@@ -190,7 +190,6 @@ void FirstLineProccessing::epn_completion (int rc,
 }
 //asynch retrieev epn and place watcher
 void FirstLineProccessing::get_epns () {
-	printf("Getting tasks\n");
 		zoo_awget_children(zh,
 						"/EPN",
 						epn_watcher,
@@ -216,12 +215,11 @@ std::string FirstLineProccessing::currentChannel = "1";
 FirstLineProccessing::FirstLineProccessing()
 {
     //OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
-    char buffer[512];
-	printf("starting program\n");
 	zoo_set_debug_level(ZOO_LOG_LEVEL_DEBUG);
 
 	zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
 	if (!zh) {
+        LOG(trace) << " error while initliazing zookeeper";
 		//return errno;
 	}
 	get_epns();
@@ -247,6 +245,7 @@ void FirstLineProccessing::PreRun()
 }
 
 bool FirstLineProccessing::ConditionalRun(){
+    LOG(trace) << "CONDITIONAL RUN";
     if(epnsChanged && (numberOfNewEpns == numberOfNewEpnsRetrieved)){
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
         //and 2) when every epn update is retrieveds 
