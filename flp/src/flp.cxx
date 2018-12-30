@@ -207,11 +207,11 @@ int FirstLineProccessing::numberOfNewEpnsRetrieved = 0;
 uint64_t FirstLineProccessing::fTextSize = 0;
 std::unique_ptr<char[]> FirstLineProccessing::text = nullptr;
 const std::string FirstLineProccessing::stateChangeHook = "hook";
-std::atomic<bool> FirstLineProccessing::isReconfiguringChannels = false;
-std::atomic<bool> FirstLineProccessing::isReinitializing = false;
-std::atomic<uint8_t> FirstLineProccessing::currentReconfigureStep = 0;
+std::atomic<bool> FirstLineProccessing::isReconfiguringChannels(false);
+std::atomic<bool> FirstLineProccessing::isReinitializing(false);
+std::atomic<uint8_t> FirstLineProccessing::currentReconfigureStep(0);
 
-std::string FirstLineProccessing::currentChannel = 1;
+std::string FirstLineProccessing::currentChannel = "1";
 
 FirstLineProccessing::FirstLineProccessing()
 {
