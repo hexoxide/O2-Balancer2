@@ -130,7 +130,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     int i;
     for( i = 0; i < strings->count; i++) {
         //LOG_DEBUG(("Assigning task %s", char *) strings->data[i]));
-        std::map<std::string, int>::iterator iterator = listOfEpns.find(strings->data[i]);
+        std::map<int, std::string>::iterator iterator = listOfEpns.find(atoi(strings->data[i]));
         if (iterator != listOfEpns.end()){
             //this does not yet check on nodes that went offline
             numberOfNewEpns += 1;
@@ -247,7 +247,7 @@ bool FirstLineProccessing::ConditionalRun(){
 
         //first delete all channels
         //then create new channels
-        for (std::map<std::string, int>::iterator it=listOfEpns.begin(); it!=listOfEpns.end(); ++it){
+        for (std::map<int, std::string>::iterator it=listOfEpns.begin(); it!=listOfEpns.end(); ++it){
             //new fairqm channel with name data  and port and ip in value
             FairMQChannel channel("push", "connect", it->second);
             LOG(trace) << "Configure packet:" << it->first << " - " << it->second;
