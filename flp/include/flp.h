@@ -17,6 +17,7 @@ class FirstLineProccessing : public FairMQDevice
   protected:
     void InitTask() override;
     void PreRun() override;
+    bool ConditionalRun() override;
 
     //bool HandleBroadcast(FairMQParts&, int);
     static void get_task_data(const char *);
@@ -25,6 +26,11 @@ class FirstLineProccessing : public FairMQDevice
     static void get_epns();
     static void epn_watcher (zhandle_t *zh, int type, int state, const char *path, void *watcherCtx);
     static void epn_completion (int rc, const struct String_vector *strings, const void *data);
+    static std::map<int, std::string> listOfEpns;
+
+    static bool epnsChanged;
+    static int numberOfNewEpns;
+    static int numberOfNewEpnsRetrieved;
 
     static uint64_t fTextSize;
 

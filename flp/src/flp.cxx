@@ -91,77 +91,15 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
             char* nodeValue = strndup(value, value_len); 
             isReconfiguringChannels = true;
             LOG(trace) << "Configuring";
+
+            int epnID = std::stoi (nodeName, nullptr);
+            listOfEpns[epnID] = nodeValue;
+
+            numberOfNewEpnsRetrieved += 1;
             // printf("key: \t");
             // printf("%s\n", nodeName);
             // printf("value \t");
             // printf("%s\n", nodeValue);
-            //new fairqm channel with name data  and port and ip in value
-                    // Add channels to device based on O2Channel message part data
-            FairMQChannel channel("push", "connect", strndup(value, value_len));
-            LOG(trace) << "Configure packet:" << nodeName << " - " << nodeValue;
-            channel.UpdateRateLogging(1);
-            channel.ValidateChannel();
-            AddChannel(nodeName, channel);
-            
-            // Device re-initialization to configure new channels
-            isReinitializing = false;
-            currentReconfigureStep = 1;
-            SubscribeToStateChange(stateChangeHook, [&](const State curState){
-                // Step 1
-                if(!isReinitializing) {
-                    LOG(trace) << "Breaking down";
-                    if(curState == READY && currentReconfigureStep == 1) 
-                    {
-                        currentReconfigureStep = 2;
-                        LOG(trace) << "DOWN step 1 - Current state is ready";
-                        ChangeState("RESET_TASK");
-                        // WaitForEndOfStateForMs("RESET_TASK", 1);
-                    }
-                    // Step 2
-                    if(curState == DEVICE_READY && currentReconfigureStep == 2)
-                    {
-                        currentReconfigureStep = 3;
-                        LOG(trace) << "DOWN step 2 - Current state is device ready";
-                        ChangeState("RESET_DEVICE");
-                        //WaitForEndOfStateForMs("RESET_DEVICE", 1);
-                    }
-                    // Step 3
-                    if(curState == IDLE && currentReconfigureStep == 3)
-                    {
-                        currentReconfigureStep = 4;
-                        LOG(trace) << "DOWN step 3 - Current state is idle";
-                        isReinitializing = true;
-                        ChangeState("INIT_DEVICE");
-                        // WaitForEndOfStateForMs("INIT_DEVICE", 1);
-                    }
-                }
-                else {
-                    LOG(trace) << "Building up";
-                    // step 4
-                    if(curState == DEVICE_READY && currentReconfigureStep == 4) {
-                        currentReconfigureStep = 5;
-                        LOG(trace) << "UP step 4 - Current state is device ready";
-                        ChangeState("INIT_TASK");
-                        // WaitForEndOfStateForMs("INIT_TASK", 1);
-                    }
-                    // step 5
-                    if(curState == READY && currentReconfigureStep == 5) {
-                        currentReconfigureStep = 6;
-                        LOG(trace) << "UP step 5 - Current state is ready";
-                        ChangeState("RUN");
-                    }
-                }
-            });
-            
-            // end of reconfigure
-            //this will have to be implemented in the run method (we still have to listen to heartbeats)
-
-            FairMQMessagePtr msgsend(NewMessage(text.get(),
-                                            fTextSize,
-                                            [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                            text.get()));
-
-            Send(msgsend, currentChannel, 0, 0); // send async
         }
             break;
         // default:
@@ -171,12 +109,11 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
 }
 void FirstLineProccessing::get_task_data(const char *task) {
     if(task == NULL) return;
-
-    //LOG_DEBUG(("Task path: %s",task));
     char * tmp_task = strndup(task, 15);
     char * path = make_path(2, "/EPN/", tmp_task);
     //LOG_DEBUG(("Getting task data %s",tmp_task));
     //data_completion_t get_task_data_completion_bound = <decltype( std::bind(&FirstLineProccessing::get_task_data_completion, this, _1, _2, _3, _4, _5) )>();
+    
     zoo_aget(zh,
              path,
              0,
@@ -193,7 +130,12 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     int i;
     for( i = 0; i < strings->count; i++) {
         //LOG_DEBUG(("Assigning task %s", char *) strings->data[i]));
-        get_task_data( strings->data[i] );
+        std::map<std::string, int>::iterator iterator = listOfEpns.find(strings->data[i]);
+        if (iterator != listOfEpns.end()){
+            //this does not yet check on nodes that went offline
+            numberOfNewEpns += 1;
+            get_task_data( strings->data[i] );
+        }
     }
 }
 
@@ -228,7 +170,10 @@ void FirstLineProccessing::epn_completion (int rc,
 		break;
 		case ZOK:
 		{
-			printf("Assigning epns\n");
+			printf("!epns list updated!\n");
+            epnsChanged = true;
+            numberOfNewEpns = 0;
+            numberOfNewEpnsRetrieved = 0;
 			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
 			assign_tasks(strings);
 			for(int i = 0; i < strings->count; i++) {
@@ -294,6 +239,87 @@ void FirstLineProccessing::PreRun()
         UnsubscribeFromStateChange(stateChangeHook);
     }
 }
+
+bool FirstLineProccessing::ConditionalRun(){
+    if(epnsChanged && (numberOfNewEpns == numberOfNewEpnsRetrieved)){
+        //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
+        //and 2) when every epn update is retrieveds 
+
+        //first delete all channels
+        //then create new channels
+        for (std::map<std::string, int>::iterator it=listOfEpns.begin(); it!=listOfEpns.end(); ++it){
+            //new fairqm channel with name data  and port and ip in value
+            FairMQChannel channel("push", "connect", it->second);
+            LOG(trace) << "Configure packet:" << it->first << " - " << it->second;
+            channel.UpdateRateLogging(1);
+            channel.ValidateChannel();
+            AddChannel(it->first, channel);
+        }
+        
+        // Device re-initialization to configure new channels
+        isReinitializing = false;
+        currentReconfigureStep = 1;
+        SubscribeToStateChange(stateChangeHook, [&](const State curState){
+            // Step 1
+            if(!isReinitializing) {
+                LOG(trace) << "Breaking down";
+                if(curState == READY && currentReconfigureStep == 1) 
+                {
+                    currentReconfigureStep = 2;
+                    LOG(trace) << "DOWN step 1 - Current state is ready";
+                    ChangeState("RESET_TASK");
+                    // WaitForEndOfStateForMs("RESET_TASK", 1);
+                }
+                // Step 2
+                if(curState == DEVICE_READY && currentReconfigureStep == 2)
+                {
+                    currentReconfigureStep = 3;
+                    LOG(trace) << "DOWN step 2 - Current state is device ready";
+                    ChangeState("RESET_DEVICE");
+                    //WaitForEndOfStateForMs("RESET_DEVICE", 1);
+                }
+                // Step 3
+                if(curState == IDLE && currentReconfigureStep == 3)
+                {
+                    currentReconfigureStep = 4;
+                    LOG(trace) << "DOWN step 3 - Current state is idle";
+                    isReinitializing = true;
+                    ChangeState("INIT_DEVICE");
+                    // WaitForEndOfStateForMs("INIT_DEVICE", 1);
+                }
+            }
+            else {
+                LOG(trace) << "Building up";
+                // step 4
+                if(curState == DEVICE_READY && currentReconfigureStep == 4) {
+                    currentReconfigureStep = 5;
+                    LOG(trace) << "UP step 4 - Current state is device ready";
+                    ChangeState("INIT_TASK");
+                    // WaitForEndOfStateForMs("INIT_TASK", 1);
+                }
+                // step 5
+                if(curState == READY && currentReconfigureStep == 5) {
+                    currentReconfigureStep = 6;
+                    LOG(trace) << "UP step 5 - Current state is ready";
+                    ChangeState("RUN");
+                }
+            }
+        });
+        
+        // end of reconfigure
+        //this will have to be implemented in the run method (we still have to listen to heartbeats)
+
+        // FairMQMessagePtr msgsend(NewMessage(text.get(),
+        //                                 fTextSize,
+        //                                 [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+        //                                 text.get()));
+
+        // Send(msgsend, currentChannel, 0, 0); // send async
+        epnsChanged = false;
+    }
+    return true;
+}
+
 
 FirstLineProccessing::~FirstLineProccessing()
 {
