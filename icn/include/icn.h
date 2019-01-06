@@ -26,6 +26,8 @@ class InformationControlNode : public FairMQDevice
 
     uint64_t fIterations;
 
+    uint64_t determineChannel();
+
     void ListenForFeedback();
     std::thread feedbackListener;
     // bool HandleFeedback(FairMQParts&, int);
@@ -34,6 +36,7 @@ class InformationControlNode : public FairMQDevice
     uint64_t numAcknowledge;
     // TODO std::unique_ptr
     std::vector<O2::data::O2Channel*> channels;
+    O2::data::O2Channel* currentChannel;
     std::atomic<bool> isConfigure;
     std::atomic<bool> isPreConfigure;
     std::chrono::system_clock::time_point startTime;

@@ -6,7 +6,7 @@
 using namespace std;
 using namespace O2::data;
 
-FirstLineProccessing::FirstLineProccessing()
+FirstLineProcessor::FirstLineProcessor()
     : fTextSize(0)
     , text(nullptr)
     , stateChangeHook("hook")
@@ -16,10 +16,10 @@ FirstLineProccessing::FirstLineProccessing()
     , lastHeartbeat(0)
     , currentChannel("1")
 {
-    OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
+    OnData("broadcast", &FirstLineProcessor::HandleBroadcast);
 }
 
-bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
+bool FirstLineProcessor::HandleBroadcast(FairMQParts& msg, int /*index*/)
 {
     bool isFirstMessagePart = true;
     FairMQParts parts;
@@ -85,9 +85,8 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
 /**
  * Handles the reinitialization to configure additional channels
  * after already having entered the run state.
- * @Param const State
  */
-void FirstLineProccessing::reinitialize()
+void FirstLineProcessor::reinitialize()
 {
     isReinitializing = false;
     currentReconfigureStep = 1;
@@ -140,7 +139,7 @@ void FirstLineProccessing::reinitialize()
     });
 }
 
-void FirstLineProccessing::InitTask()
+void FirstLineProcessor::InitTask()
 {
     fTextSize = fConfig->GetValue<uint64_t>("bytes-per-message");
     LOG(trace) << "Create message of size " << to_string(fTextSize);
@@ -153,7 +152,7 @@ void FirstLineProccessing::InitTask()
 /**
  * Called before going back into run state, ensures leaving reconfigureChannel state
  */
-void FirstLineProccessing::PreRun()
+void FirstLineProcessor::PreRun()
 {
     if(isReconfiguringChannels) {
         isReconfiguringChannels = false;
@@ -161,5 +160,5 @@ void FirstLineProccessing::PreRun()
     }
 }
 
-FirstLineProccessing::~FirstLineProccessing()
+FirstLineProcessor::~FirstLineProcessor()
 = default;

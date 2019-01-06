@@ -11,5 +11,5 @@ void addCustomOptions(bpo::options_description& options)
 
 FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/)
 {
-    return new FirstLineProccessing();
+    return new FirstLineProcessor();
 }

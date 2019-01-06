@@ -1,5 +1,11 @@
 #include <FairMQLogger.h>
 
+/**
+ * Custom FairMQLogger sink to add additional data to the output.
+ * @param content The message to be displayed in the logs.
+ * @param metadata Additional information such as the line, function and file the log was called from.
+ * @deprecated don't use this it was never implemented.
+ */
 Logger::AddCustomSink("O2", "info", [](const string& content, const LogMetaData& metadata)
 {
     cout << "content: " << content << endl;

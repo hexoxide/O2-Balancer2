@@ -39,7 +39,7 @@ make -j 2
 ```bash
 ./icn/icn --control static --severity trace --verbosity high --id 1 --iterations 500 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=1,address=tcp://*:5005 name=feedback,type=pull,method=bind,rateLogging=1,address=tcp://*:5000
 ./flp/flp --severity trace --verbosity high --id 1 --bytes-per-message 2097152 --channel-config name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://localhost:5005
-./epn/epn --control static --severity trace --verbosity high --id 1 --num-flp 10 --channel-config name=1,type=pull,method=bind,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=push,method=connect,address=tcp://localhost:5000
+./epn/epn --control static --severity trace --verbosity high --id 1 --primary-interface lo --num-flp 10 --channel-config name=1,type=pull,method=bind,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=push,method=connect,address=tcp://localhost:5000
 ```
 
 ### Operational parameters

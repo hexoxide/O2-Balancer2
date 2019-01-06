@@ -11,6 +11,7 @@ InformationControlNode::InformationControlNode()
 	: fIterations(0)
 	, numHeartbeat(0)
 	, channels()
+	, currentChannel(nullptr)
 	, isConfigure(true)
 	, isPreConfigure(true)
 	, startTime()
@@ -63,7 +64,7 @@ bool InformationControlNode::ConditionalRun()
     //rng.seed(random_device()());
     //uniform_int_distribution<mt19937::result_type> dist4(1,1);
     // TODO round-robin algorithm
-	s1->tarChannel = 1; //dist4(rng); // selected channel for flp's to transmit on
+	s1->tarChannel = determineChannel(); // selected channel for flp's to transmit on
 	s1->configure = isConfigure; // if the packet is configuring the flp channels
 	void* data1 = s1;
     parts.AddPart(NewMessage(data1, 
@@ -123,6 +124,38 @@ void InformationControlNode::PostRun()
 }
 
 /**
+ * Determines the next appropriate channel the FLP should use to send data to the EPN
+ * @return the desired channel
+ */
+uint64_t InformationControlNode::determineChannel()
+{
+	uint64_t index = 0;
+
+	// currentChannel initialization 
+	if(currentChannel == nullptr)
+	{
+		currentChannel = channels.at(0);
+	}
+
+	if(currentChannel == channels.back())
+	{
+		LOG(trace) << "current channel was last entry";
+		currentChannel = channels.front();
+	}
+	else 
+	{
+		LOG(trace) << "Advancing channel";
+		std::vector<O2Channel*>::iterator it = std::find(channels.begin(), channels.end(), currentChannel);
+		std::advance (it, 1);
+		index = std::distance(channels.begin(), it);
+		currentChannel = channels.at(index);
+	}
+
+	LOG(trace) << "Chosen channel:" << currentChannel->index;
+	return currentChannel->index;
+}
+
+/**
  * Count the number of feedbacks from EPN's 
  * this can be used to determine the number of lost heartbeats
  */
@@ -150,7 +183,7 @@ void InformationControlNode::ListenForFeedback()
 	    		// Copy data and assign to pointer
 	    		// TODO std::unique_ptr
 		    	auto  data = new O2Channel(*static_cast<O2Channel*>(part->GetData()));
-		    	LOG(TRACE) << "Got channel " << to_string(data->index) << " " << to_string(data->port);
+		    	LOG(TRACE) << "Got channel " << std::string(*data);
 		    	// Push data into vector
 		    	channels.push_back(data);
 		    }

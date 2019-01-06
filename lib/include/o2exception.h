@@ -11,10 +11,12 @@ namespace exception {
 class O2Exception : public std::exception {
 public:
     /** Constructor (C strings).
-     *  @param message C-style string error message.
-     *                 The string contents are copied upon construction.
-     *                 Hence, responsibility for deleting the char* lies
-     *                 with the caller. 
+     *  @param  message C-style string error message.
+     *                  The string contents are copied upon construction.
+     *                  Hence, responsibility for deleting the char* lies
+     *                  with the caller. 
+     *  @param file     C-style string which should be passed __FILE__.
+     *  @param line     Integer which should be passed __LINE__.
      */
     explicit O2Exception(const char* message, const char* file, const int line) : msg_(message)
       {
@@ -25,7 +27,9 @@ public:
       }
 
     /** Constructor (C++ STL strings).
-     *  @param message The error message.
+     *  @param message  The error message.
+     *  @param file     The __FILE__ from which the exception was caused.
+     *  @param line     The __LINE__ from which the exception was caused.
      */
     explicit O2Exception(const std::string& message, const std::string& file, const int line) : msg_(message)
       {

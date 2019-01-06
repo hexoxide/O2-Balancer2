@@ -3,11 +3,14 @@
 
 #include "FairMQDevice.h"
 
-class EventProccessingNode : public FairMQDevice
+/**
+ * Receives messages from the FLP and determines if an ackownledgements should be send to the ICN.
+ */
+class EventProcessingNode : public FairMQDevice
 {
   public:
-    EventProccessingNode();
-    ~EventProccessingNode() override;
+    EventProcessingNode();
+    ~EventProcessingNode() override;
     
     static const std::string pNumberOfFLP;
     static const std::string pPrimaryNetworkInterface;

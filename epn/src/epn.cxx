@@ -10,15 +10,15 @@ using namespace O2::data;
 using namespace O2::exception;
 
 /** Name of the channel an epn will return information about received messages on */
-const std::string EventProccessingNode::feedbackChannel = "feedback";
+const std::string EventProcessingNode::feedbackChannel = "feedback";
 
 /** Number of FLP's the EPN will expect to be in the network */
-const std::string EventProccessingNode::pNumberOfFLP = "num-flp";
+const std::string EventProcessingNode::pNumberOfFLP = "num-flp";
 
 /** The primary network interface to use while performing load balancing experiments */
-const std::string EventProccessingNode::pPrimaryNetworkInterface = "primary-interface";
+const std::string EventProcessingNode::pPrimaryNetworkInterface = "primary-interface";
 
-EventProccessingNode::EventProccessingNode()
+EventProcessingNode::EventProcessingNode()
     : fNumFlp(0)
     , fPrimaryNetworkInterface("")
     , receivedMessages(0)
@@ -27,15 +27,15 @@ EventProccessingNode::EventProccessingNode()
 {
 }
 
-void EventProccessingNode::InitTask()
+void EventProcessingNode::InitTask()
 {
     // register a handler for data arriving on "data" channel
-    OnData(fConfig->GetValue<std::string>("id"), &EventProccessingNode::HandleData);
+    OnData(fConfig->GetValue<std::string>("id"), &EventProcessingNode::HandleData);
     fNumFlp = fConfig->GetValue<uint64_t>(pNumberOfFLP);
     fPrimaryNetworkInterface = fConfig->GetValue<std::string>(pPrimaryNetworkInterface);
 }
 
-void EventProccessingNode::PreRun()
+void EventProcessingNode::PreRun()
 {
     FairMQParts parts;
     auto  firstPacket = new O2Data();
@@ -55,6 +55,7 @@ void EventProccessingNode::PreRun()
     catch(std::exception& e) {
         throw O2Exception(e.what(), __FILE__, __LINE__);
     }
+    // TODO update this according to the configured channel information were the id matches the channel name
     s2->port = 5555;
     LOG(TRACE) << "EPN will send the following channel confguration to ICN: " << std::string(*s2);
     void* data2 = s2;
@@ -68,10 +69,11 @@ void EventProccessingNode::PreRun()
 }
 
 /**
- * s
+ * Receives data from the FLP and determines if they were received in order and if an acknowledgement should be send.
+ * @param msg the data send by the FLP broken up into individual parts.
  * @return if the handling of the data was successful
  */
-bool EventProccessingNode::HandleData(FairMQParts& msg, int /*index*/)
+bool EventProcessingNode::HandleData(FairMQParts& msg, int index)
 {
     bool firstMessagePart = true;
     O2Data* data = nullptr;
@@ -117,5 +119,5 @@ bool EventProccessingNode::HandleData(FairMQParts& msg, int /*index*/)
     return true;
 }
 
-EventProccessingNode::~EventProccessingNode()
+EventProcessingNode::~EventProcessingNode()
 = default;

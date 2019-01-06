@@ -7,11 +7,11 @@
 
 #include "FairMQDevice.h"
 
-class FirstLineProccessing : public FairMQDevice
+class FirstLineProcessor : public FairMQDevice
 {
   public:
-    FirstLineProccessing();
-    ~FirstLineProccessing() override;
+    FirstLineProcessor();
+    ~FirstLineProcessor() override;
 
   protected:
     void InitTask() override;
