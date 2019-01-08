@@ -179,6 +179,7 @@ void FirstLineProccessing::epn_completion (int rc,
 			for(int i = 0; i < strings->count; i++) {
 				printf("%s", strings->data[i]);
 			}
+            LOG(trace) << "amount of epns: " << to_string(numberOfNewEpns);
 			//free_vector(tmp_tasks);
 		}
 		break;
@@ -245,8 +246,8 @@ void FirstLineProccessing::PreRun()
 }
 
 bool FirstLineProccessing::ConditionalRun(){
-    LOG(trace) << "CONDITIONAL RUN";
     if(epnsChanged && (numberOfNewEpns == numberOfNewEpnsRetrieved)){
+        LOG(trace) << "received all epns information";
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
         //and 2) when every epn update is retrieveds 
 
