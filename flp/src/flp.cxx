@@ -87,8 +87,8 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
 
         case ZOK:
         {
-            char* nodeName = strndup(value, value_len);
-            char* nodeValue = (char *) data; 
+            char* nodeName = (char *) data;
+            char* nodeValue = strndup(value, value_len);
             isReconfiguringChannels = true;
             LOG(trace) << "Configuring";
             LOG(trace) << "nodename" << nodeName;
@@ -98,10 +98,6 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
             listOfEpns[epnID] = nodeValue;
 
             numberOfNewEpnsRetrieved += 1;
-            // printf("key: \t");
-            // printf("%s\n", nodeName);
-            // printf("value \t");
-            // printf("%s\n", nodeValue);
         }
             break;
         // default:
@@ -122,7 +118,7 @@ void FirstLineProccessing::get_task_data(const char *task) {
              get_task_data_completion,
              (const void *) tmp_task);
     free(path);
-    free(tmp_task);
+    //free(tmp_task); // dit sloopt eht op de een of andere manier, terwijl het wel moet volgens c++ reference na strndup
 }
 void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     /*
