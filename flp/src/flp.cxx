@@ -87,11 +87,12 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
 
         case ZOK:
         {
-            char* nodeName = (char *) data;
-            char* nodeValue = strndup(value, value_len); 
+            char* nodeName = strndup(value, value_len);
+            char* nodeValue = (char *) data; 
             isReconfiguringChannels = true;
             LOG(trace) << "Configuring";
             LOG(trace) << "nodename" << nodeName;
+            LOG(trace) << "nodeValue" << nodeValue;
 
             int epnID = std::stoi (nodeName);
             listOfEpns[epnID] = nodeValue;
