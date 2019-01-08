@@ -130,12 +130,14 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     int i;
     for( i = 0; i < strings->count; i++) {
         //LOG_DEBUG(("Assigning task %s", char *) strings->data[i]));
-        std::map<int, std::string>::iterator iterator = listOfEpns.find(atoi(strings->data[i]));
-        if (iterator != listOfEpns.end()){
-            //this does not yet check on nodes that went offline
-            numberOfNewEpns += 1;
-            get_task_data( strings->data[i] );
-        }
+        // std::map<int, std::string>::iterator iterator = listOfEpns.find(atoi(strings->data[i]));
+        // if (iterator == listOfEpns.end()){
+        //     //this does not yet check on nodes that went offline, neither checks updated value
+        // }
+        numberOfNewEpns += 1;
+        get_task_data( strings->data[i] );
+    }
+    if(strings->count > 0){
         epnsChanged = true;
     }
 }
