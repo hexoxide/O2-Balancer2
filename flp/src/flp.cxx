@@ -91,8 +91,9 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
             char* nodeValue = strndup(value, value_len); 
             isReconfiguringChannels = true;
             LOG(trace) << "Configuring";
+            LOG(trace) << "nodename" << nodeName;
 
-            int epnID = std::stoi (nodeName, nullptr);
+            int epnID = std::stoi (nodeName);
             listOfEpns[epnID] = nodeValue;
 
             numberOfNewEpnsRetrieved += 1;
