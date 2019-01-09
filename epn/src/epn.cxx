@@ -55,14 +55,15 @@ EventProccessingNode::EventProccessingNode()
 		//return errno;
 	}
 
-	int rc = zoo_create(zh,"/epn", address.c_str(), 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
-						buffer, sizeof(buffer)-1);
 }
 
 void EventProccessingNode::InitTask()
 {
     address = fConfig->GetValue<string>("address");
     fNumFlp = fConfig->GetValue<uint64_t>("num-flp");
+
+	int rc = zoo_create(zh,"/EPN/", address.c_str(), 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
+						buffer, sizeof(buffer)-1);
 }
 
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
