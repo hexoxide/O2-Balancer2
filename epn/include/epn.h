@@ -11,6 +11,8 @@ class EventProcessingNode : public FairMQDevice
   public:
     EventProcessingNode();
     ~EventProcessingNode() override;
+
+    uint16_t initialDelay;
     
     static const std::string pNumberOfFLP;
     static const std::string pPrimaryNetworkInterface;

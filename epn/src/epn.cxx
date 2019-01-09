@@ -19,7 +19,8 @@ const std::string EventProcessingNode::pNumberOfFLP = "num-flp";
 const std::string EventProcessingNode::pPrimaryNetworkInterface = "primary-interface";
 
 EventProcessingNode::EventProcessingNode()
-    : fNumFlp(0)
+    : initialDelay(10)
+    , fNumFlp(0)
     , fPrimaryNetworkInterface("")
     , receivedMessages(0)
     , currentHeartbeat(0)
@@ -47,7 +48,7 @@ void EventProcessingNode::PreRun()
                             sizeof(O2Data),
                             [](void* /*data*/, void* object) { delete static_cast<O2Data*>(object); },
                             firstPacket));
-    // TODO ask kernel nicely for ip address try not to use unreadable C examples.
+    /* Get interface ipv4 address for the specific network interface*/
     auto  s2 = new O2Channel(O2::network::getInterfaceAddress(fPrimaryNetworkInterface));
     try {
         s2->index = stoll(fConfig->GetValue<std::string>("id"));
@@ -63,7 +64,7 @@ void EventProcessingNode::PreRun()
                             sizeof(O2Channel),
                             [](void* /*data*/, void* object) { delete static_cast<O2Channel*>(object); },
                             s2));
-    this_thread::sleep_for(chrono::seconds(10));
+    this_thread::sleep_for(chrono::seconds(initialDelay));
     LOG(TRACE) << "Sending configuration packet";
     Send(parts, feedbackChannel, 0, 0); // Send the packet asynchronously
 }
