@@ -63,7 +63,7 @@ void EventProccessingNode::InitTask()
 	}
     std::string address = GetChannel("1").GetAddress();
 
-	int rc = zoo_create(zh,"/EPN/", address.c_str(), strlen(address), &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
+	int rc = zoo_create(zh,"/EPN/", address.c_str(), address.length(), &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
 						buffer, sizeof(buffer)-1);
 }
 
