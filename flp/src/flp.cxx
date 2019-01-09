@@ -331,8 +331,8 @@ bool FirstLineProccessing::ConditionalRun(){
 
         Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
         currentChannel++;
-        return true;
     }
+    return true;
 }
 
 
