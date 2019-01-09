@@ -53,7 +53,7 @@ EventProccessingNode::EventProccessingNode()
 
 void EventProccessingNode::InitTask()
 {
-    address = fConfig->GetValue<string>("address");
+    //address = fConfig->GetValue<string>("address");
     fNumFlp = fConfig->GetValue<uint64_t>("num-flp");
     char buffer[512];
 
@@ -61,6 +61,7 @@ void EventProccessingNode::InitTask()
 	if (!zh) {
 		//return errno;
 	}
+    std::string address = GetChannel("1").GetAddress();
 
 	int rc = zoo_create(zh,"/EPN/", address.c_str(), 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
 						buffer, sizeof(buffer)-1);
