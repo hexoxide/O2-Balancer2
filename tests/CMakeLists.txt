@@ -52,8 +52,16 @@ set(TEST_O2CHANNEL_SOURCE
 	src/test-o2channel.cxx
 )
 
+set(TEST_ICN_SOURCE 
+	src/integration/test-icn.cxx
+)
+
+set(TEST_FLP_SOURCE 
+	src/integration/test-flp.cxx
+)
+
 set(TEST_EPN_SOURCE 
-	src/test-epn.cxx
+	src/integration/test-epn.cxx
 )
 
 message("O2B2: test example cxx flags: ${CMAKE_CXX_FLAGS}")
@@ -70,6 +78,12 @@ add_executable(testo2ip ${TEST_O2IP_SOURCE})
 
 message("O2B2: test o2channel cxx flags: ${CMAKE_CXX_FLAGS}")
 add_executable(testo2channel ${TEST_O2CHANNEL_SOURCE})
+
+message("O2B2: test icn cxx flags: ${CMAKE_CXX_FLAGS}")
+add_executable(testicn ${TEST_ICN_SOURCE})
+
+message("O2B2: test flp cxx flags: ${CMAKE_CXX_FLAGS}")
+add_executable(testflp ${TEST_FLP_SOURCE})
 
 message("O2B2: test epn cxx flags: ${CMAKE_CXX_FLAGS}")
 add_executable(testepn ${TEST_EPN_SOURCE})
@@ -115,6 +129,22 @@ target_link_libraries(
 )
 
 target_link_libraries(
+	testicn
+	O2
+	O2Integration
+	${O2_Balancer2_LIBRARIES}
+	${O2_Balancer2_TEST_LIBRARIES}
+)
+
+target_link_libraries(
+	testflp
+	O2
+	O2Integration
+	${O2_Balancer2_LIBRARIES}
+	${O2_Balancer2_TEST_LIBRARIES}
+)
+
+target_link_libraries(
 	testepn
 	O2
 	O2Integration
@@ -127,4 +157,6 @@ add_test(TestException testexception)
 add_test(TestO2Network testo2network)
 add_test(TestO2Ip testo2ip)
 add_test(TestO2Channel testo2channel)
+add_test(TestICN testicn)
+add_test(TestFLP testflp)
 add_test(TestEPN testepn)

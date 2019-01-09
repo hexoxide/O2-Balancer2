@@ -8,7 +8,8 @@ using namespace std;
 using namespace O2::data;
 
 InformationControlNode::InformationControlNode()
-	: fIterations(0)
+	: initialDelay(10)
+	, fIterations(0)
 	, numHeartbeat(0)
 	, channels()
 	, currentChannel(nullptr)
@@ -53,7 +54,7 @@ bool InformationControlNode::ConditionalRun()
         //               firstPacket));
     	//Send(firstParts, "broadcast", 0, 0); // Send the packet asynchronously
     	LOG(trace) << "Waiting for FLP's to register on broadcast channel";
-    	this_thread::sleep_for(chrono::seconds(10)); // Wait 10 seconds to ensure all pub-sub channels are setup
+    	this_thread::sleep_for(chrono::seconds(initialDelay)); // Wait 10 seconds to ensure all pub-sub channels are setup
     	LOG(trace) << "FLP's should have registered?";
     }
 

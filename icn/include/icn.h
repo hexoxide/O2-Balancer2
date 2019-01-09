@@ -18,6 +18,8 @@ class InformationControlNode : public FairMQDevice
     InformationControlNode();
     ~InformationControlNode() override;
 
+    uint16_t initialDelay;
+
   protected:
     void InitTask() override;
     void PreRun() override;
