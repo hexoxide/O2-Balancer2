@@ -43,7 +43,7 @@ class FirstLineProccessing : public FairMQDevice
     static std::atomic<uint8_t> currentReconfigureStep;
 
     uint64_t lastHeartbeat;
-    static std::string currentChannel;
+    static std::map<int, std::string>::iterator currentChannel;
 };
 
 #endif /* FLP_H */

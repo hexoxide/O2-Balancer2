@@ -211,7 +211,7 @@ std::atomic<bool> FirstLineProccessing::isReconfiguringChannels(false);
 std::atomic<bool> FirstLineProccessing::isReinitializing(false);
 std::atomic<uint8_t> FirstLineProccessing::currentReconfigureStep(0);
 
-std::string FirstLineProccessing::currentChannel = "1";
+//std::string FirstLineProccessing::currentChannel = "1";
 
 FirstLineProccessing::FirstLineProccessing()
 {
@@ -261,6 +261,7 @@ bool FirstLineProccessing::ConditionalRun(){
             channel.ValidateChannel();
             AddChannel(to_string(it->first), channel);
         }
+        currentChannel = listOfEpns.begin();
         
         // Device re-initialization to configure new channels
         isReinitializing = false;
@@ -313,18 +314,25 @@ bool FirstLineProccessing::ConditionalRun(){
         });
         
         // end of reconfigure
-        //this will have to be implemented in the run method (we still have to listen to heartbeats)
-
-        // FairMQMessagePtr msgsend(NewMessage(text.get(),
-        //                                 fTextSize,
-        //                                 [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-        //                                 text.get()));
-
-        // Send(msgsend, currentChannel, 0, 0); // send async
         epnsChanged = false;
         return false;
     }
-    return true;
+    //listen to heartbeats)
+
+    if(listOfEpns.size() > 0){
+        if(currentChannel == listOfEpns.end()){
+            currentChannel = listOfEpns.begin();
+        }
+        
+        FairMQMessagePtr msgsend(NewMessage(text.get(),
+                                        fTextSize,
+                                        [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                        text.get()));
+
+        Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
+        listOfEpns++;
+        return true;
+    }
 }
 
 
