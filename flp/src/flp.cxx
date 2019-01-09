@@ -247,7 +247,7 @@ void FirstLineProccessing::PreRun()
 
 bool FirstLineProccessing::ConditionalRun(){
     //listen to heartbeats)
-    if(listOfEpns.size() > 0){
+    if(!isReconfiguringChannels && listOfEpns.size() > 0){
         if(currentChannel == listOfEpns.end()){
             currentChannel = listOfEpns.begin();
         }
@@ -327,8 +327,7 @@ bool FirstLineProccessing::ConditionalRun(){
                 }
             }
         });
-        
-        this_thread::sleep_for(chrono::seconds(3));
+
         // end of reconfigure
         epnsChanged = false;
         return false;
