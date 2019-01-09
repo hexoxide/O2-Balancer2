@@ -255,7 +255,7 @@ bool FirstLineProccessing::ConditionalRun(){
         //then create new channels
         for (std::map<int, std::string>::iterator it=listOfEpns.begin(); it!=listOfEpns.end(); ++it){
             //new fairqm channel with name data  and port and ip in value
-            FairMQChannel channel("push", "connect", "tcp://" + it->second);
+            FairMQChannel channel("push", "connect", it->second);
             LOG(trace) << "Configure packet:" << it->first << " - " << it->second;
             channel.UpdateRateLogging(1);
             channel.ValidateChannel();
