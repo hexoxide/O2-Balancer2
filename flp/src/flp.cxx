@@ -246,6 +246,21 @@ void FirstLineProccessing::PreRun()
 }
 
 bool FirstLineProccessing::ConditionalRun(){
+    //listen to heartbeats)
+    if(listOfEpns.size() > 0){
+        if(currentChannel == listOfEpns.end()){
+            currentChannel = listOfEpns.begin();
+        }
+        
+        FairMQMessagePtr msgsend(NewMessage(text.get(),
+                                        fTextSize,
+                                        [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                        text.get()));
+
+        Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
+        currentChannel++;
+    }
+
     if(epnsChanged && (numberOfNewEpns == numberOfNewEpnsRetrieved)){
         LOG(trace) << "received all epns information";
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
@@ -316,21 +331,6 @@ bool FirstLineProccessing::ConditionalRun(){
         // end of reconfigure
         epnsChanged = false;
         return false;
-    }
-    //listen to heartbeats)
-
-    if(listOfEpns.size() > 0){
-        if(currentChannel == listOfEpns.end()){
-            currentChannel = listOfEpns.begin();
-        }
-        
-        FairMQMessagePtr msgsend(NewMessage(text.get(),
-                                        fTextSize,
-                                        [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                        text.get()));
-
-        Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
-        currentChannel++;
     }
     return true;
 }
