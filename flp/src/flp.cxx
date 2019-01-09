@@ -248,6 +248,7 @@ void FirstLineProccessing::PreRun()
 bool FirstLineProccessing::ConditionalRun(){
     //listen to heartbeats)
     if(!isReconfiguringChannels && listOfEpns.size() > 0){
+        LOG(trace) << "we are going to send message";
         if(currentChannel == listOfEpns.end()){
             currentChannel = listOfEpns.begin();
         }
