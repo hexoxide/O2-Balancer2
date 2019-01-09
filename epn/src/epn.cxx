@@ -46,14 +46,8 @@ EventProccessingNode::EventProccessingNode()
 {
     // register a handler for data arriving on "data" channel
     OnData("1", &EventProccessingNode::HandleData);
-    char buffer[512];
 	printf("starting program\n");
 	zoo_set_debug_level(ZOO_LOG_LEVEL_DEBUG);
-
-	zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
-	if (!zh) {
-		//return errno;
-	}
 
 }
 
@@ -61,6 +55,12 @@ void EventProccessingNode::InitTask()
 {
     address = fConfig->GetValue<string>("address");
     fNumFlp = fConfig->GetValue<uint64_t>("num-flp");
+    char buffer[512];
+
+	zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
+	if (!zh) {
+		//return errno;
+	}
 
 	int rc = zoo_create(zh,"/EPN/", address.c_str(), 5, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
 						buffer, sizeof(buffer)-1);
