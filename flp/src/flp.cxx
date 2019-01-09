@@ -330,7 +330,7 @@ bool FirstLineProccessing::ConditionalRun(){
                                         text.get()));
 
         Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
-        listOfEpns++;
+        currentChannel++;
         return true;
     }
 }
