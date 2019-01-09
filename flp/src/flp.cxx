@@ -90,6 +90,7 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
             char* nodeName = (char *) data;
             char* nodeValue = strndup(value, value_len);
             isReconfiguringChannels = true;
+            epnsListChanged = true; 
             LOG(trace) << "Configuring";
             LOG(trace) << "nodename" << nodeName;
             LOG(trace) << "nodeValue" << nodeValue;
@@ -201,6 +202,7 @@ void FirstLineProccessing::get_epns () {
 
 std::map<int, std::string> FirstLineProccessing::listOfEpns;
 bool FirstLineProccessing::epnsChanged = false;
+bool FirstLineProccessing::epnsListChanged = false;
 int FirstLineProccessing::numberOfNewEpns = 0;
 int FirstLineProccessing::numberOfNewEpnsRetrieved = 0;
 
@@ -247,8 +249,7 @@ void FirstLineProccessing::PreRun()
 
 bool FirstLineProccessing::ConditionalRun(){
     //listen to heartbeats)
-    if(!isReconfiguringChannels && listOfEpns.size() > 0){
-        LOG(trace) << "we are going to send message";
+    if(!epnsListChanged && listOfEpns.size() > 0){
         if(currentChannel == listOfEpns.end()){
             currentChannel = listOfEpns.begin();
         }
@@ -331,6 +332,7 @@ bool FirstLineProccessing::ConditionalRun(){
 
         // end of reconfigure
         epnsChanged = false;
+        epnsListChanged = false;
         return false;
     }
     return true;

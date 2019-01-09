@@ -29,6 +29,7 @@ class FirstLineProccessing : public FairMQDevice
 
     static std::map<int, std::string> listOfEpns;
     static bool epnsChanged;
+    static bool epnsListChanged;
     static int numberOfNewEpns;
     static int numberOfNewEpnsRetrieved;
 
