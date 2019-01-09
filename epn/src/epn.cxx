@@ -61,6 +61,7 @@ void EventProccessingNode::InitTask()
 	if (!zh) {
 		//return errno;
 	}
+    
     std::string address = GetChannel("1").GetAddress();
 
 	int rc = zoo_create(zh,"/EPN/", address.c_str(), address.length(), &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE,
