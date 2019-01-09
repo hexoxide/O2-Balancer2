@@ -277,8 +277,7 @@ bool FirstLineProccessing::ConditionalRun(){
             AddChannel(to_string(it->first), channel);
         }
         currentChannel = listOfEpns.begin();
-        this_thread::sleep_for(chrono::seconds(1));
-        
+
         // Device re-initialization to configure new channels
         isReinitializing = false;
         currentReconfigureStep = 1;
@@ -329,6 +328,7 @@ bool FirstLineProccessing::ConditionalRun(){
             }
         });
         
+        this_thread::sleep_for(chrono::seconds(3));
         // end of reconfigure
         epnsChanged = false;
         return false;
