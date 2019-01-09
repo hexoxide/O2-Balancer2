@@ -211,7 +211,7 @@ std::atomic<bool> FirstLineProccessing::isReconfiguringChannels(false);
 std::atomic<bool> FirstLineProccessing::isReinitializing(false);
 std::atomic<uint8_t> FirstLineProccessing::currentReconfigureStep(0);
 
-//std::string FirstLineProccessing::currentChannel = "1";
+std::map<int, std::string>::iterator FirstLineProccessing::currentChannel = listOfEpns.begin();
 
 FirstLineProccessing::FirstLineProccessing()
 {
