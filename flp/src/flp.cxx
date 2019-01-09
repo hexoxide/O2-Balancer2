@@ -322,6 +322,7 @@ bool FirstLineProccessing::ConditionalRun(){
 
         // Send(msgsend, currentChannel, 0, 0); // send async
         epnsChanged = false;
+        return false;
     }
     return true;
 }
