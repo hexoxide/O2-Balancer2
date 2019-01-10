@@ -18,6 +18,8 @@ class InformationControlNode : public FairMQDevice
     InformationControlNode();
     ~InformationControlNode() override;
 
+    uint64_t getNumberOfChannels();
+
     uint16_t initialDelay;
 
   protected:
@@ -36,6 +38,7 @@ class InformationControlNode : public FairMQDevice
 
     uint64_t numHeartbeat;
     uint64_t numAcknowledge;
+    
     // TODO std::unique_ptr
     std::vector<O2::data::O2Channel*> channels;
     O2::data::O2Channel* currentChannel;

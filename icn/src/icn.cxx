@@ -19,6 +19,11 @@ InformationControlNode::InformationControlNode()
 {
 }
 
+uint64_t InformationControlNode::getNumberOfChannels()
+{
+	return channels.size();
+}
+
 void InformationControlNode::InitTask()
 {
 	fIterations = fConfig->GetValue<uint64_t>("iterations");
