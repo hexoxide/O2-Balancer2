@@ -2,6 +2,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <utility>
 
 using namespace O2::exception;
 

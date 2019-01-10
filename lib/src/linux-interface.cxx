@@ -1,6 +1,7 @@
 #include "linux-interface.h"
 
 #include <iostream>
+#include <utility>
 
 using namespace O2::data;
 using namespace O2::exception;
@@ -20,12 +21,12 @@ namespace network {
 	        throw O2Exception("Could not open network interface", __FILE__, __LINE__);
 	    }
 
-	    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) 
+	    for (ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) 
 	    {
-	        if (ifa->ifa_addr == NULL)
+	        if (ifa->ifa_addr == nullptr)
 	            continue;  
 
-	        s=getnameinfo(ifa->ifa_addr,sizeof(struct sockaddr_in),host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+	        s=getnameinfo(ifa->ifa_addr,sizeof(struct sockaddr_in),host, NI_MAXHOST, nullptr, 0, NI_NUMERICHOST);
 
 	        if((strcmp(ifa->ifa_name, interfaceName.c_str())==0)&&(ifa->ifa_addr->sa_family==AF_INET))
 	        {

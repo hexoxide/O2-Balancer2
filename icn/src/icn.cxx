@@ -146,7 +146,7 @@ uint64_t InformationControlNode::determineChannel()
 	else 
 	{
 		LOG(trace) << "Advancing channel";
-		std::vector<O2Channel*>::iterator it = std::find(channels.begin(), channels.end(), currentChannel);
+		auto it = std::find(channels.begin(), channels.end(), currentChannel);
 		std::advance (it, 1);
 		index = std::distance(channels.begin(), it);
 		currentChannel = channels.at(index);

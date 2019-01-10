@@ -19,37 +19,37 @@ public:
      *  @param line     Integer which should be passed __LINE__.
      */
     explicit O2Exception(const char* message, const char* file, const int line) : msg_(message)
-      {
+    {
       	msg_ += " ";
       	msg_ += std::string(file);
       	msg_ += ":";
       	msg_ += std::to_string(line);
-      }
+    }
 
     /** Constructor (C++ STL strings).
      *  @param message  The error message.
      *  @param file     The __FILE__ from which the exception was caused.
      *  @param line     The __LINE__ from which the exception was caused.
      */
-    explicit O2Exception(const std::string& message, const std::string& file, const int line) : msg_(message)
-      {
+    explicit O2Exception(std::string  message, const std::string& file, const int line) : msg_(std::move(message))
+    {
       	msg_ += " ";
       	msg_ += file;
       	msg_ += ":";
       	msg_ += std::to_string(line);
-      }
+    }
 
     /** Destructor.
      * Virtual to allow for subclassing.
      */
-    virtual ~O2Exception() throw (){}
+    ~O2Exception() throw () override = default;
 
     /** Returns a pointer to the (constant) error description.
      *  @return A pointer to a const char*. The underlying memory
      *          is in posession of the Exception object. Callers must
      *          not attempt to free the memory.
      */
-    virtual const char* what() const throw (){
+    const char* what() const throw () override{
        return msg_.c_str();
     }
 protected:

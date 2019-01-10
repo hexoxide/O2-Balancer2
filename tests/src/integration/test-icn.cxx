@@ -66,7 +66,7 @@ void addCustomOptions(boost::program_options::options_description& options)
 BOOST_AUTO_TEST_CASE(TestIcn) {
 
 	// Create FairMQ DeviceRunner to enable extending commandline options
-	char * const test[] = {NULL};
+	char * const test[] = {nullptr};
 	DeviceRunner runner{0, test, false};
 
 	// extend commandline options

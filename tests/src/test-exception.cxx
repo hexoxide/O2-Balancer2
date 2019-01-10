@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_SUITE(Test_Exception)
 
 BOOST_AUTO_TEST_CASE(TestExceptionOutput) {
 	std::string prefix = "start"; 
-	std::string postfix = ":16"; // ensure the number matches the line number in the __LINE__ instruction
+	std::string postfix = ":16"; // ensure the number matches the line number in the __LINE__ instruction!
 	O2Exception test = O2Exception(prefix, __FILE__, __LINE__); // Create O2Exception and correctly pass __FILE__ and __LINE__
 
 	std::string exceptionWhat = std::string(test.what()); // convert the exception char* into a std::string
