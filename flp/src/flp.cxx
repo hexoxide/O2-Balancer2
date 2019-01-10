@@ -268,7 +268,7 @@ bool FirstLineProccessing::ConditionalRun(){
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
         //and 2) when every epn update is retrieveds 
         FairMQProgOptions options();
-        SetConfig(options&);
+        SetConfig(*options);
         //first delete all channels
         //then create new channels
         for (std::map<int, std::string>::iterator it=listOfEpns.begin(); it!=listOfEpns.end(); ++it){
