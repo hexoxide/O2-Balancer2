@@ -267,7 +267,7 @@ bool FirstLineProccessing::ConditionalRun(){
         LOG(trace) << "received all epns information";
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
         //and 2) when every epn update is retrieveds 
-        FairMQProgOptions options();
+        FairMQProgOptions options;
         SetConfig(options);
         //first delete all channels
         //then create new channels
