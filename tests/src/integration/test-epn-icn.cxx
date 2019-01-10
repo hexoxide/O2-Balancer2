@@ -81,7 +81,12 @@ void addCustomOptionsICN(boost::program_options::options_description& options)
         ("iterations", boost::program_options::value<uint64_t>()->required(), "Number of iterations for the duration of the experiment");
 }
 
-bool TestEPN() {
+/**
+ * Creates an instance of EventProcessingNode and configures it with the specified id
+ * @param EPNId the ID that will be used to confgure the EPN
+ * @return true if the device ran succesfully, false otherwise
+ */
+bool TestEPN(std::string EPNId) {
     // Create FairMQ DeviceRunner to enable extending commandline options
     char * const test[] = {nullptr};
     DeviceRunner EPNrunner{0, test, false};
@@ -92,7 +97,7 @@ bool TestEPN() {
 
     /* The configuration for the EPN as found in the readme */
     vector<string> EPNArguments = {"dummy", 
-        "--id", "1", 
+        "--id", EPNId, 
         "--control", "static", 
         "--severity", "trace",
         "--verbosity", "high",
@@ -121,11 +126,11 @@ bool TestEPN() {
     /* Create the first channel as found in the readme */
     FairMQChannel channelOne;
     channelOne.UpdateType("pull");
-    channelOne.UpdateMethod("bind");
+    channelOne.UpdateMethod("connect");
     channelOne.UpdateAddress("tcp://localhost:5555");
     channelOne.UpdateRateLogging(true);
     /* Add the channel with an appropriate name */
-    EPNdevice.AddChannel("1", channelOne);
+    EPNdevice.AddChannel(EPNId, channelOne);
 
     /* Create the second channel as found in the readme */
     FairMQChannel channelTwo;
@@ -150,7 +155,7 @@ bool TestEPN() {
     return true;
 }
 
-bool TestICN() {
+bool TestICN(uint16_t numberOfExpectedChannels) {
     // Create FairMQ DeviceRunner to enable extending commandline options
     char * const test[] = {nullptr};
     DeviceRunner ICNrunner{0, test, false};
@@ -161,12 +166,12 @@ bool TestICN() {
 
     /* The configuration for the ICN as found in the readme */
     vector<string> ICNArguments = {"dummy", 
-        "--id", "1", 
+        "--id", "1",
         "--control", "static", 
         "--severity", "trace",
         "--verbosity", "high",
         "--rate", "200",
-        "--iterations", "2000"
+        "--iterations", "0"
     };
 
     /* Set the transport method to zeromq*/
@@ -216,12 +221,38 @@ bool TestICN() {
         t.join();
     }
 
-    return (ICNdevice.getNumberOfChannels() > 0) ? true : false;
+    // Number of received channels in ICN device should match expected result based on the number of created EPN's
+    return (ICNdevice.getNumberOfChannels() == numberOfExpectedChannels) ? true : false;
 }
 
-BOOST_AUTO_TEST_CASE(TestEpnIcn) {
-    std::future<bool> fut1 = std::async(std::launch::async, &TestEPN);
-    std::future<bool> fut2 = std::async(std::launch::async, &TestICN);
+BOOST_AUTO_TEST_CASE(TestEpnIcnSingleChannel) {
+    std::future<bool> fut1 = std::async(std::launch::async, &TestEPN, "1");
+    std::future<bool> fut2 = std::async(std::launch::async, &TestICN, 1);
+
+    BOOST_CHECK_EQUAL(fut1.get(), true);
+    BOOST_CHECK_EQUAL(fut2.get(), true);
+}
+
+BOOST_AUTO_TEST_CASE(TestEpnIcnMultiChannel) {
+    std::future<bool> fut1 = std::async(std::launch::async, &TestEPN, "1");
+    std::future<bool> fut2 = std::async(std::launch::async, &TestEPN, "2");
+    std::future<bool> fut3 = std::async(std::launch::async, &TestEPN, "3");
+    std::future<bool> fut4 = std::async(std::launch::async, &TestEPN, "4");
+    std::future<bool> fut5 = std::async(std::launch::async, &TestICN, 4);
+
+    BOOST_CHECK_EQUAL(fut1.get(), true);
+    BOOST_CHECK_EQUAL(fut2.get(), true);
+    BOOST_CHECK_EQUAL(fut3.get(), true);
+    BOOST_CHECK_EQUAL(fut4.get(), true);
+    BOOST_CHECK_EQUAL(fut5.get(), true);
+}
+
+BOOST_AUTO_TEST_CASE(TestEpnIcnMismatchChannel) {
+    std::future<bool> fut1 = std::async(std::launch::async, &TestEPN, "1");
+    std::future<bool> fut2 = std::async(std::launch::async, &TestICN, 2);
+
+    BOOST_CHECK_EQUAL(fut1.get(), true);
+    BOOST_CHECK_EQUAL(fut2.get(), false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
