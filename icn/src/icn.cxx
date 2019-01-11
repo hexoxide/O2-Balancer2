@@ -157,7 +157,7 @@ uint64_t InformationControlNode::determineChannel()
 		currentChannel = channels.at(index);
 	}
 
-	LOG(trace) << "Chosen channel:" << currentChannel->index;
+	// LOG(trace) << "Chosen channel:" << currentChannel->index;
 	return currentChannel->index;
 }
 
