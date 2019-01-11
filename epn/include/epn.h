@@ -22,6 +22,7 @@ class EventProcessingNode : public FairMQDevice
 
   	void InitTask() override;
     void PreRun() override;
+    void PostRun() override;
 
     bool HandleData(FairMQParts& msg, int);
 
@@ -30,6 +31,7 @@ class EventProcessingNode : public FairMQDevice
   	
   	uint64_t receivedMessages;
     uint64_t currentHeartbeat;
+    uint64_t numOutOfOrder;
     bool     isCurrentlyOutOfOrder;
 
   private:

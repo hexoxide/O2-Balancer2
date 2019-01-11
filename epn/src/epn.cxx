@@ -24,6 +24,7 @@ EventProcessingNode::EventProcessingNode()
     , fPrimaryNetworkInterface("")
     , receivedMessages(0)
     , currentHeartbeat(0)
+    , numOutOfOrder(0)
     , isCurrentlyOutOfOrder(false)
 {
 }
@@ -100,6 +101,7 @@ bool EventProcessingNode::HandleData(FairMQParts& msg, int index)
     if(currentHeartbeat != data->heartbeat && !isCurrentlyOutOfOrder)
     {
         // LOG(TRACE) << "Message " << to_string(receivedMessages) << " arrived out of order!";
+        numOutOfOrder++;
         isCurrentlyOutOfOrder = true;
     }
 
@@ -118,6 +120,11 @@ bool EventProcessingNode::HandleData(FairMQParts& msg, int index)
     }
 
     return true;
+}
+
+void EventProcessingNode::PostRun()
+{
+    LOG(trace) << "Number of out of orders  " << numOutOfOrder;
 }
 
 EventProcessingNode::~EventProcessingNode()

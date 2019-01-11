@@ -145,12 +145,12 @@ uint64_t InformationControlNode::determineChannel()
 
 	if(currentChannel == channels.back())
 	{
-		LOG(trace) << "current channel was last entry";
+		// LOG(trace) << "current channel was last entry";
 		currentChannel = channels.front();
 	}
 	else 
 	{
-		LOG(trace) << "Advancing channel";
+		// LOG(trace) << "Advancing channel";
 		auto it = std::find(channels.begin(), channels.end(), currentChannel);
 		std::advance (it, 1);
 		index = std::distance(channels.begin(), it);
