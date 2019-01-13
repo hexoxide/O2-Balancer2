@@ -107,24 +107,24 @@ void FirstLineProccessing::get_epn_data_completion(int rc, const char *value, in
         //     break;
     }
 }
-void FirstLineProccessing::get_epn_data(const char *task) {
-    if(task == NULL) return;
-    char * tmp_task = strndup(task, 15);
-    char * path = make_path(2, "/EPN/", tmp_task);
-    //LOG_DEBUG(("Getting task data %s",tmp_task));
+void FirstLineProccessing::get_epn_data(const char *epn) {
+    if(epn == NULL) return;
+    char * epnName = strndup(epn, 15);
+    char * path = make_path(2, "/EPN/", epnName);
+    //LOG_DEBUG(("Getting epn data %s",epnName));
     //data_completion_t get_epn_data_completion_bound = <decltype( std::bind(&FirstLineProccessing::get_epn_data_completion, this, _1, _2, _3, _4, _5) )>();
     
     zoo_aget(zh,
              path,
              0,
              get_epn_data_completion,
-             (const void *) tmp_task);
+             (const void *) epnName);
     free(path);
-    //free(tmp_task); // dit sloopt eht op de een of andere manier, terwijl het wel moet volgens c++ reference na strndup
+    //free(epnName); // dit sloopt eht op de een of andere manier, terwijl het wel moet volgens c++ reference na strndup
 }
 void FirstLineProccessing::handleZkEpnsUpdate(const struct String_vector *strings) {
     int amountZkEpns = strings->count;
-    //LOG_DEBUG(("Task count: %d", strings->count));
+    //LOG_DEBUG(("epn count: %d", strings->count));
     if( amountZkEpns > listOfAvailableEpns.size()){
         //zk inserted new epn
         int i;
@@ -171,22 +171,21 @@ void FirstLineProccessing::epn_watcher (zhandle_t *zh,
                     const char *path,
                     void *watcherCtx)
   {
-    printf("epn watcher triggered %s\n", std::string(path).c_str());
+    LOG(trace) << "epn watcher triggerd" << std::string(path);
     if( type == ZOO_CHILD_EVENT) {
         get_epns();
     }
-    printf("Tasks watcher done\n");
+    LOG(trace) << "epn watcher done";
 }
 /**
  *
  * Completion function invoked when the call to get
- * the list of tasks returns.
+ * the list of epns returns.
  *
  */
 void FirstLineProccessing::epn_completion (int rc,
 					const struct String_vector *strings,
 					const void *data) {
-	//struct String_vector *tmp_tasks;
 	switch (rc) {
 		case ZCONNECTIONLOSS:
 		case ZOPERATIONTIMEOUT:
@@ -204,7 +203,6 @@ void FirstLineProccessing::epn_completion (int rc,
 				printf("%s", strings->data[i]);
 			}
             LOG(trace) << "amount of new epns: " << to_string(numberOfNewEpns);
-			//free_vector(tmp_tasks);
 		}
 		break;
 		default:
