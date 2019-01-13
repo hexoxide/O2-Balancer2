@@ -124,26 +124,39 @@ void FirstLineProccessing::get_task_data(const char *task) {
 void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     int amountZkEpns = strings->count;
     //LOG_DEBUG(("Task count: %d", strings->count));
-    if( amountZkEpns > listOfEpns.size()){
+    if( amountZkEpns > listOfAvailableEpns.size()){
+        //zk inserted new epn
         int i;
         for( i = 0; i < amountZkEpns; i++) {
-            LOG(trace) << "reqeuesting epns";
-            std::map<int, std::string>::iterator iterator = listOfEpns.find(atoi(strings->data[i]));
+            std::map<int, std::string>::iterator iterator = listOfAvailableEpns.find(atoi(strings->data[i]));
             if (iterator == listOfEpns.end()){
-                //new node
                 LOG(trace) << "new node!";
+                numberOfNewEpns += 1;
+                get_task_data( strings->data[i] ); //in teas data completion its get added to listOfnewEpns TODO
+                //doesnt have to check if the channel already existed because its ephenumeral
             }
-            numberOfNewEpns += 1;
-            get_task_data( strings->data[i] );
         }
-        //zk inserted new epn
+        epnsChanged = true;
     }else{
         //equal = no inserton or delete but update on epn (this si not implemented)
-        //so its less which means deletion
-
-    }
-    if(amountZkEpns != listOfEpns.size()){
-        epnsChanged = true;
+        //so one less noce which means deletion
+        //zk inserted new epn
+        bool foundEpn;
+        for (std::map<char,int>::iterator it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
+            int i;
+            foundEpn = false;
+            for( i = 0; i < amountZkEpns; i++) {
+                if(it->first == atoi(strings->data[i])){
+                    foundEpn = true;
+                    break;
+                }
+            }
+            if(!foundEpn){
+                listOfAvailableEpns.erase (it);
+                LOG(trace) << "deleted: " << to_string(it->first);
+                break;
+            }
+        }    
     }
 }
 
