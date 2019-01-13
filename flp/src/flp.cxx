@@ -138,10 +138,8 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
             }
         }
         epnsChanged = true;
-    }else{
-        //equal = no inserton or delete but update on epn (this si not implemented)
-        //so one less noce which means deletion
-        //zk inserted new epn
+    }else if(amountZkEpns < listOfAvailableEpns.size()){
+        //zk deleted epn
         bool foundEpn;
         std::map<int, std::string>::iterator it;
         for (it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
