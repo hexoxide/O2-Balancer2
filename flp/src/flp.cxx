@@ -141,6 +141,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     }else if(amountZkEpns < listOfAvailableEpns.size()){
         //zk deleted epn
         bool foundEpn;
+        epnsListChanged = true;
         std::map<int, std::string>::iterator it;
         for (it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
             LOG(trace) << "iterating: " << it->second;
@@ -164,6 +165,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
         listOfAvailableEpns.erase (it);                
         currentChannel = listOfAvailableEpns.end();
         LOG(trace) << "listofavailableepns size after del: " << to_string(listOfAvailableEpns.size());
+        epnsListChanged = false;
     }
 }
 
