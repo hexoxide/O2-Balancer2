@@ -27,11 +27,10 @@ void watcher(zhandle_t *zzh,
     if (type == ZOO_SESSION_EVENT) {
        if (state == ZOO_CONNECTED_STATE) {
            connected = 1;
-
-           printf("Received a connected event.\n");
+           LOG(trace) << "Received a connected event.";
        } else if (state == ZOO_CONNECTING_STATE) {
            if(connected == 1) {
-               printf("Disconnected.\n");
+               LOG(trace) << "DIsconnected";
            }
            connected = 0;
        } else if (state == ZOO_EXPIRED_SESSION_STATE) {
@@ -195,19 +194,18 @@ void FirstLineProccessing::epn_completion (int rc,
 		break;
 		case ZOK:
 		{
-			printf("!epns list updated!\n");
+			LOG(trace) << "!epns list updated! epn nodes:";
             numberOfNewEpns = 0;
             numberOfNewEpnsRetrieved = 0;
 			handleZkEpnsUpdate(strings);
 			for(int i = 0; i < strings->count; i++) {
-				printf("%s", strings->data[i]);
+                LOG(trace) << strings->data[i];
 			}
             LOG(trace) << "amount of new epns: " << to_string(numberOfNewEpns);
 		}
 		break;
 		default:
-			printf("Something went wrong when checking epns: %d", rc);
-
+            LOG(trace) << "Something went wrong when checking epns:"; //to_string(rc)
 			break;
 	}
 }
