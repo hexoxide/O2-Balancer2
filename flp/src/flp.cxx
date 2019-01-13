@@ -163,6 +163,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
         LOG(trace) << "deleting epn: " << it->second;
         listOfAvailableEpns.erase (it);                
         currentChannel = listOfAvailableEpns.end();
+        LOG(trace) << "listofavailableepns size after del: " << to_string(listOfAvailableEpns.size());
     }
 }
 
@@ -276,6 +277,7 @@ void FirstLineProccessing::PreRun()
 bool FirstLineProccessing::ConditionalRun(){
     //listen to heartbeats)
     if(!epnsListChanged && listOfAvailableEpns.size() > 0){
+        LOG(trace) << "listofavailableepns size in run: " << to_string(listOfAvailableEpns.size());
         if(currentChannel == listOfAvailableEpns.end()){
             currentChannel = listOfAvailableEpns.begin();
         }
