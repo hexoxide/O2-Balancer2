@@ -158,6 +158,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
                 LOG(trace) << "listofavailableepns size before del: " << to_string(listOfAvailableEpns.size());
                 listOfAvailableEpns.erase (it);
                 currentChannel = listOfAvailableEpns.end();
+                LOG(trace) << "still alive";
                 break;
             }
         }    
