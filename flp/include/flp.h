@@ -27,7 +27,8 @@ class FirstLineProccessing : public FairMQDevice
     static void epn_watcher (zhandle_t *zh, int type, int state, const char *path, void *watcherCtx);
     static void epn_completion (int rc, const struct String_vector *strings, const void *data);
 
-    static std::map<int, std::string> listOfEpns;
+    static std::map<int, std::string> listOfAvailableEpns;
+    static std::map<int, std::string> listOfNewEpns;
     static bool epnsChanged;
     static bool epnsListChanged;
     static int numberOfNewEpns;

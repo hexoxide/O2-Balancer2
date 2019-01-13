@@ -92,12 +92,13 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
             isReconfiguringChannels = true;
             epnsListChanged = true; 
             LOG(trace) << "Configuring";
-            LOG(trace) << "nodename" << nodeName;
-            LOG(trace) << "nodeValue" << nodeValue;
+            LOG(trace) << "nodename: " << nodeName;
+            LOG(trace) << "nodeValue: " << nodeValue;
 
             int epnID = std::stoi (nodeName);
-            listOfEpns[epnID] = nodeValue;
+            listOfAvailableEpns[epnID] = nodeValue;
 
+            listOfNewEpns[epnID] = nodeValue;
             numberOfNewEpnsRetrieved += 1;
         }
             break;
@@ -129,10 +130,10 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
         int i;
         for( i = 0; i < amountZkEpns; i++) {
             std::map<int, std::string>::iterator iterator = listOfAvailableEpns.find(atoi(strings->data[i]));
-            if (iterator == listOfEpns.end()){
+            if (iterator == listOfAvailableEpns.end()){
                 LOG(trace) << "new node!";
                 numberOfNewEpns += 1;
-                get_task_data( strings->data[i] ); //in teas data completion its get added to listOfnewEpns TODO
+                get_task_data( strings->data[i] );
                 //doesnt have to check if the channel already existed because its ephenumeral
             }
         }
@@ -219,7 +220,8 @@ void FirstLineProccessing::get_epns () {
 						NULL);
 }
 
-std::map<int, std::string> FirstLineProccessing::listOfEpns;
+std::map<int, std::string> FirstLineProccessing::listOfAvailableEpns;
+std::map<int, std::string> FirstLineProccessing::listOfNewEpns;
 bool FirstLineProccessing::epnsChanged = false;
 bool FirstLineProccessing::epnsListChanged = false;
 int FirstLineProccessing::numberOfNewEpns = 0;
@@ -232,7 +234,7 @@ std::atomic<bool> FirstLineProccessing::isReconfiguringChannels(false);
 std::atomic<bool> FirstLineProccessing::isReinitializing(false);
 std::atomic<uint8_t> FirstLineProccessing::currentReconfigureStep(0);
 
-std::map<int, std::string>::iterator FirstLineProccessing::currentChannel = listOfEpns.begin();
+std::map<int, std::string>::iterator FirstLineProccessing::currentChannel = listOfAvailableEpns.begin();
 
 FirstLineProccessing::FirstLineProccessing()
 {
@@ -268,9 +270,9 @@ void FirstLineProccessing::PreRun()
 
 bool FirstLineProccessing::ConditionalRun(){
     //listen to heartbeats)
-    if(!epnsListChanged && listOfEpns.size() > 0){
-        if(currentChannel == listOfEpns.end()){
-            currentChannel = listOfEpns.begin();
+    if(!epnsListChanged && listOfAvailableEpns.size() > 0){
+        if(currentChannel == listOfAvailableEpns.end()){
+            currentChannel = listOfAvailableEpns.begin();
         }
         
         FairMQMessagePtr msgsend(NewMessage(text.get(),
@@ -289,7 +291,7 @@ bool FirstLineProccessing::ConditionalRun(){
 
         //first delete all channels
         //then create new channels
-        for (std::map<int, std::string>::iterator it=listOfEpns.begin(); it!=listOfEpns.end(); ++it){
+        for (std::map<int, std::string>::iterator it=listOfNewEpns.begin(); it!=listOfNewEpns.end(); ++it){
             //new fairqm channel with name data  and port and ip in value
             FairMQChannel channel("push", "connect", it->second);
             LOG(trace) << "Configure packet:" << it->first << " - " << it->second;
@@ -297,7 +299,8 @@ bool FirstLineProccessing::ConditionalRun(){
             channel.ValidateChannel();
             AddChannel(to_string(it->first), channel);
         }
-        currentChannel = listOfEpns.begin();
+        listOfNewEpns.clear();
+        currentChannel = listOfAvailableEpns.begin(); //probably not needed TODO
 
         // Device re-initialization to configure new channels
         isReinitializing = false;
