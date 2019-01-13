@@ -122,21 +122,27 @@ void FirstLineProccessing::get_task_data(const char *task) {
     //free(tmp_task); // dit sloopt eht op de een of andere manier, terwijl het wel moet volgens c++ reference na strndup
 }
 void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
-    /*
-     * for each epn receive ip and port
-     */
+    int amountZkEpns = strings->count;
     //LOG_DEBUG(("Task count: %d", strings->count));
-    int i;
-    for( i = 0; i < strings->count; i++) {
-        //LOG_DEBUG(("Assigning task %s", char *) strings->data[i]));
-        // std::map<int, std::string>::iterator iterator = listOfEpns.find(atoi(strings->data[i]));
-        // if (iterator == listOfEpns.end()){
-        //     //this does not yet check on nodes that went offline, neither checks updated value
-        // }
-        numberOfNewEpns += 1;
-        get_task_data( strings->data[i] );
+    if( amountZkEpns > listOfEpns.size()){
+        int i;
+        for( i = 0; i < amountZkEpns; i++) {
+            LOG(trace) << "reqeuesting epns";
+            std::map<int, std::string>::iterator iterator = listOfEpns.find(atoi(strings->data[i]));
+            if (iterator == listOfEpns.end()){
+                //new node
+                LOG(trace) << "new node!";
+            }
+            numberOfNewEpns += 1;
+            get_task_data( strings->data[i] );
+        }
+        //zk inserted new epn
+    }else{
+        //equal = no inserton or delete but update on epn (this si not implemented)
+        //so its less which means deletion
+
     }
-    if(strings->count > 0){
+    if(amountZkEpns != listOfEpns.size()){
         epnsChanged = true;
     }
 }
@@ -267,8 +273,7 @@ bool FirstLineProccessing::ConditionalRun(){
         LOG(trace) << "received all epns information";
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
         //and 2) when every epn update is retrieveds 
-        FairMQProgOptions options;
-        SetConfig(options);
+
         //first delete all channels
         //then create new channels
         for (std::map<int, std::string>::iterator it=listOfEpns.begin(); it!=listOfEpns.end(); ++it){
