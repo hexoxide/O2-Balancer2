@@ -155,7 +155,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
             if(!foundEpn){
                 listOfAvailableEpns.erase (it);
                 LOG(trace) << "deleted: " << to_string(it->first);
-                currentChannel = listOfAvailableEpns.begin();
+                currentChannel = listOfAvailableEpns.end();
                 break;
             }
         }    
