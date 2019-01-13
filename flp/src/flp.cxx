@@ -74,14 +74,14 @@ char * make_path(int num, ...) {
     return path;
 }
 
-void FirstLineProccessing::get_task_data_completion(int rc, const char *value, int value_len,
+void FirstLineProccessing::get_epn_data_completion(int rc, const char *value, int value_len,
                               const struct Stat *stat, const void *data) {
     //int worker_index;
 
     switch (rc) {
         case ZCONNECTIONLOSS:
         case ZOPERATIONTIMEOUT:
-            get_task_data((const char *) data);
+            get_epn_data((const char *) data);
 
             break;
 
@@ -107,22 +107,22 @@ void FirstLineProccessing::get_task_data_completion(int rc, const char *value, i
         //     break;
     }
 }
-void FirstLineProccessing::get_task_data(const char *task) {
+void FirstLineProccessing::get_epn_data(const char *task) {
     if(task == NULL) return;
     char * tmp_task = strndup(task, 15);
     char * path = make_path(2, "/EPN/", tmp_task);
     //LOG_DEBUG(("Getting task data %s",tmp_task));
-    //data_completion_t get_task_data_completion_bound = <decltype( std::bind(&FirstLineProccessing::get_task_data_completion, this, _1, _2, _3, _4, _5) )>();
+    //data_completion_t get_epn_data_completion_bound = <decltype( std::bind(&FirstLineProccessing::get_epn_data_completion, this, _1, _2, _3, _4, _5) )>();
     
     zoo_aget(zh,
              path,
              0,
-             get_task_data_completion,
+             get_epn_data_completion,
              (const void *) tmp_task);
     free(path);
     //free(tmp_task); // dit sloopt eht op de een of andere manier, terwijl het wel moet volgens c++ reference na strndup
 }
-void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
+void FirstLineProccessing::handleZkEpnsUpdate(const struct String_vector *strings) {
     int amountZkEpns = strings->count;
     //LOG_DEBUG(("Task count: %d", strings->count));
     if( amountZkEpns > listOfAvailableEpns.size()){
@@ -133,7 +133,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
             if (iterator == listOfAvailableEpns.end()){
                 LOG(trace) << "new node!";
                 numberOfNewEpns += 1;
-                get_task_data( strings->data[i] );
+                get_epn_data( strings->data[i] );
                 //doesnt have to check if the channel already existed because its ephenumeral
             }
         }
@@ -141,7 +141,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
     }else if(amountZkEpns < listOfAvailableEpns.size()){
         //zk deleted epn
         bool foundEpn;
-        epnsListChanged = true;
+        epnsListChanged = true; //needed because this is a different thread, and it might cause a seg fault in run
         std::map<int, std::string>::iterator it;
         for (it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
             LOG(trace) << "iterating: " << it->second;
@@ -154,18 +154,14 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
                 }
             }
             if(!foundEpn){
-                LOG(trace) << "deleting epn: " << it->second;
-                //LOG(trace) << "deleted: " << strings->data[i];
-                LOG(trace) << "listofavailableepns size before del: " << to_string(listOfAvailableEpns.size());
-                LOG(trace) << "still alive";
+                LOG(trace) << "found deleted epn: " << it->second;
                 break;
             }
         }
         LOG(trace) << "deleting epn: " << it->second;
         listOfAvailableEpns.erase (it);                
-        currentChannel = listOfAvailableEpns.end();
-        LOG(trace) << "listofavailableepns size after del: " << to_string(listOfAvailableEpns.size());
-        epnsListChanged = false;
+        currentChannel = listOfAvailableEpns.end(); //reset
+        epnsListChanged = false; //unlock
     }
 }
 
@@ -203,8 +199,7 @@ void FirstLineProccessing::epn_completion (int rc,
 			printf("!epns list updated!\n");
             numberOfNewEpns = 0;
             numberOfNewEpnsRetrieved = 0;
-			// struct String_vector *tmp_tasks = added_and_set(strings, &epns);
-			assign_tasks(strings);
+			handleZkEpnsUpdate(strings);
 			for(int i = 0; i < strings->count; i++) {
 				printf("%s", strings->data[i]);
 			}
@@ -279,7 +274,6 @@ void FirstLineProccessing::PreRun()
 bool FirstLineProccessing::ConditionalRun(){
     //listen to heartbeats)
     if(!epnsListChanged && listOfAvailableEpns.size() > 0){
-        LOG(trace) << "listofavailableepns size in run: " << to_string(listOfAvailableEpns.size());
         if(currentChannel == listOfAvailableEpns.end()){
             currentChannel = listOfAvailableEpns.begin();
         }
@@ -298,8 +292,6 @@ bool FirstLineProccessing::ConditionalRun(){
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
         //and 2) when every epn update is retrieveds 
 
-        //first delete all channels
-        //then create new channels
         for (std::map<int, std::string>::iterator it=listOfNewEpns.begin(); it!=listOfNewEpns.end(); ++it){
             //new fairqm channel with name data  and port and ip in value
             FairMQChannel channel("push", "connect", it->second);
