@@ -153,8 +153,10 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
                 }
             }
             if(!foundEpn){
+                LOG(trace) << "deleting epn";
+                LOG(trace) << "deleted: " << strings->data[i];
+                LOG(trace) << "listofavailableepns size before del: " << to_string(listOfAvailableEpns.size());
                 listOfAvailableEpns.erase (it);
-                LOG(trace) << "deleted: " << to_string(it->first);
                 currentChannel = listOfAvailableEpns.end();
                 break;
             }
@@ -201,7 +203,7 @@ void FirstLineProccessing::epn_completion (int rc,
 			for(int i = 0; i < strings->count; i++) {
 				printf("%s", strings->data[i]);
 			}
-            LOG(trace) << "amount of epns: " << to_string(numberOfNewEpns);
+            LOG(trace) << "amount of new epns: " << to_string(numberOfNewEpns);
 			//free_vector(tmp_tasks);
 		}
 		break;
@@ -301,7 +303,7 @@ bool FirstLineProccessing::ConditionalRun(){
             AddChannel(to_string(it->first), channel);
         }
         listOfNewEpns.clear();
-        currentChannel = listOfAvailableEpns.begin(); //probably not needed TODO
+        currentChannel = listOfAvailableEpns.end(); //probably not needed TODO
 
         // Device re-initialization to configure new channels
         isReinitializing = false;
