@@ -143,7 +143,9 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
         //so one less noce which means deletion
         //zk inserted new epn
         bool foundEpn;
-        for (std::map<int, std::string>::iterator it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
+        std::map<int, std::string>::iterator it;
+        for (it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
+            LOG(trace) << "iterating: " << it->second;
             int i;
             foundEpn = false;
             for( i = 0; i < amountZkEpns; i++) {
@@ -153,15 +155,16 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
                 }
             }
             if(!foundEpn){
-                LOG(trace) << "deleting epn";
-                LOG(trace) << "deleted: " << strings->data[i];
+                LOG(trace) << "deleting epn: " << it->second;
+                //LOG(trace) << "deleted: " << strings->data[i];
                 LOG(trace) << "listofavailableepns size before del: " << to_string(listOfAvailableEpns.size());
-                listOfAvailableEpns.erase (it);
-                currentChannel = listOfAvailableEpns.end();
                 LOG(trace) << "still alive";
                 break;
             }
-        }    
+        }
+        LOG(trace) << "deleting epn: " << it->second;
+        listOfAvailableEpns.erase (it);                
+        currentChannel = listOfAvailableEpns.end();
     }
 }
 
