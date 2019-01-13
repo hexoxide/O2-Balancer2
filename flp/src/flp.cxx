@@ -143,7 +143,7 @@ void FirstLineProccessing::assign_tasks(const struct String_vector *strings) {
         //so one less noce which means deletion
         //zk inserted new epn
         bool foundEpn;
-        for (std::map<char,int>::iterator it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
+        for (std::map<int, std::string>::iterator it=listOfAvailableEpns.begin(); it!=listOfAvailableEpns.end(); ++it){
             int i;
             foundEpn = false;
             for( i = 0; i < amountZkEpns; i++) {
