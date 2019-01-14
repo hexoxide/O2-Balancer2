@@ -24,6 +24,7 @@ class InformationControlNode : public FairMQDevice
     void PreRun() override;
     bool ConditionalRun() override;
     void PostRun() override;
+  	static std::unique_ptr<char[]> text;
 
     void ExitDevice(const State);
 

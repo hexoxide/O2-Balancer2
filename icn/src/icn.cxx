@@ -13,6 +13,8 @@
 
 using namespace std;
 
+std::unique_ptr<char[]> FirstLineProccessing::text = nullptr;
+
 InformationControlNode::InformationControlNode()
 	: fIterations(0)
 	, stateChangeHook("hook")
@@ -31,18 +33,21 @@ void InformationControlNode::InitTask()
 	fIterations = fConfig->GetValue<uint64_t>("iterations");
 	fIterations = fConfig->GetValue<uint32_t>("rate");
 	startTime = chrono::high_resolution_clock::now();
+    text = unique_ptr<char[]>(new char[fTextSize]);
 }
 
 bool InformationControlNode::ConditionalRun()
-{
-	FairMQMessagePtr msgToSend();
-	
+{	
     auto nowTime   = chrono::high_resolution_clock::now();
     auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - startTime).count();
 
     std::cout << "millis: " << mseconds;
 	if(mseconds > 1000 && numHeartbeat < fIterations) 
 	{
+        FairMQMessagePtr msgToSend(NewMessage(text.get(),
+                                    1,
+                                    [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                    text.get()));
     	Send(msgToSend, "broadcast", 0, 0);
 		numHeartbeat++;
 		return true;
