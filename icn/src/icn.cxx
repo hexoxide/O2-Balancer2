@@ -13,7 +13,7 @@
 
 using namespace std;
 
-std::unique_ptr<char[]> FirstLineProccessing::text = nullptr;
+std::unique_ptr<char[]> InformationControlNode::text = nullptr;
 
 InformationControlNode::InformationControlNode()
 	: fIterations(0)
