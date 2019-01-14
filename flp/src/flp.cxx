@@ -219,6 +219,24 @@ void FirstLineProccessing::get_epns () {
 						NULL);
 }
 
+bool FirstLineProcessor::HandleBroadcast(FairMQParts& msg, int /*index*/)
+{
+    //listen to heartbeats)
+    if(!epnsListChanged && listOfAvailableEpns.size() > 0){
+        if(currentChannel == listOfAvailableEpns.end()){
+            currentChannel = listOfAvailableEpns.begin();
+        }
+        
+        FairMQMessagePtr msgsend(NewMessage(text.get(),
+                                        fTextSize,
+                                        [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                        text.get()));
+
+        Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
+        currentChannel++;
+    }
+}
+
 std::map<int, std::string> FirstLineProccessing::listOfAvailableEpns;
 std::map<int, std::string> FirstLineProccessing::listOfNewEpns;
 bool FirstLineProccessing::epnsChanged = false;
@@ -237,7 +255,7 @@ std::map<int, std::string>::iterator FirstLineProccessing::currentChannel = list
 
 FirstLineProccessing::FirstLineProccessing()
 {
-    //OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
+    OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
 	zoo_set_debug_level(ZOO_LOG_LEVEL_DEBUG);
 
 	zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
@@ -268,21 +286,6 @@ void FirstLineProccessing::PreRun()
 }
 
 bool FirstLineProccessing::ConditionalRun(){
-    //listen to heartbeats)
-    if(!epnsListChanged && listOfAvailableEpns.size() > 0){
-        if(currentChannel == listOfAvailableEpns.end()){
-            currentChannel = listOfAvailableEpns.begin();
-        }
-        
-        FairMQMessagePtr msgsend(NewMessage(text.get(),
-                                        fTextSize,
-                                        [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                        text.get()));
-
-        Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
-        currentChannel++;
-    }
-
     if(epnsChanged && (numberOfNewEpns == numberOfNewEpnsRetrieved)){
         LOG(trace) << "received all epns information";
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
