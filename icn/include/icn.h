@@ -24,7 +24,6 @@ class InformationControlNode : public FairMQDevice
     bool ConditionalRun() override;
     void PostRun() override;
 
-    void ListenForFeedback();
     void ExitDevice(const State);
 
     uint64_t fIterations;
@@ -34,7 +33,6 @@ class InformationControlNode : public FairMQDevice
     std::atomic<uint8_t> currentReconfigureStep;
 
     uint64_t numHeartbeat;
-    std::thread feedbackListener;
     std::vector<O2Channel> channels;
     bool isConfigure;
     std::chrono::system_clock::time_point startTime;
