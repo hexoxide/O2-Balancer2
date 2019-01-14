@@ -21,7 +21,6 @@ class InformationControlNode : public FairMQDevice
 
   protected:
     void InitTask() override;
-    void PreRun() override;
     bool ConditionalRun() override;
     void PostRun() override;
   	static std::unique_ptr<char[]> text;
