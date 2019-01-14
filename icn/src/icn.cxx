@@ -38,7 +38,7 @@ bool InformationControlNode::ConditionalRun()
 	FairMQMessagePtr msgToSend();
 	
     auto nowTime   = high_resolution_clock::now();
-    auto mseconds = duration_cast<milliseconds>(now - startTime).count();
+    auto mseconds = duration_cast<milliseconds>(nowTime - startTime).count();
 
     std::cout << "millis: " << mseconds;
 	if(mseconds > 1000 && numHeartbeat < fIterations) 

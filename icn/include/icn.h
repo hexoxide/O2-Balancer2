@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <string>
+#include <iostream>
 
 // Dependencies
 #include "FairMQDevice.h"
@@ -36,7 +37,7 @@ class InformationControlNode : public FairMQDevice
     uint64_t numHeartbeat;
     std::vector<O2Channel> channels;
     bool isConfigure;
-    auto startTime;
+    std::chrono::system_clock::time_point startTime;
 };
 
 #endif /* ICN_H */
