@@ -36,7 +36,7 @@ class InformationControlNode : public FairMQDevice
     uint64_t numHeartbeat;
     std::vector<O2Channel> channels;
     bool isConfigure;
-    std::chrono::system_clock::time_point startTime;
+    auto startTime;
 };
 
 #endif /* ICN_H */
