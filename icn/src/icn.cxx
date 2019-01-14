@@ -30,15 +30,15 @@ void InformationControlNode::InitTask()
 {
 	fIterations = fConfig->GetValue<uint64_t>("iterations");
 	fIterations = fConfig->GetValue<uint32_t>("rate");
-	startTime = high_resolution_clock::now();
+	startTime = chrono::high_resolution_clock::now();
 }
 
 bool InformationControlNode::ConditionalRun()
 {
 	FairMQMessagePtr msgToSend();
 	
-    auto nowTime   = high_resolution_clock::now();
-    auto mseconds = duration_cast<milliseconds>(nowTime - startTime).count();
+    auto nowTime   = chrono::high_resolution_clock::now();
+    auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - startTime).count();
 
     std::cout << "millis: " << mseconds;
 	if(mseconds > 1000 && numHeartbeat < fIterations) 
