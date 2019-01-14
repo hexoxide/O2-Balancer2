@@ -33,7 +33,7 @@ void InformationControlNode::InitTask()
 	fIterations = fConfig->GetValue<uint64_t>("iterations");
 	fIterations = fConfig->GetValue<uint32_t>("rate");
 	startTime = chrono::high_resolution_clock::now();
-    text = unique_ptr<char[]>(new char[fTextSize]);
+    text = unique_ptr<char[]>(new char[1]);
 }
 
 bool InformationControlNode::ConditionalRun()
