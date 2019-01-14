@@ -28,13 +28,21 @@ InformationControlNode::InformationControlNode()
 void InformationControlNode::InitTask()
 {
 	fIterations = fConfig->GetValue<uint64_t>("iterations");
+	fIterations = fConfig->GetValue<uint32_t>("rate");
+	startTime = high_resolution_clock::now();
 }
 
 bool InformationControlNode::ConditionalRun()
 {
-	if(numHeartbeat < fIterations) 
+	FairMQMessagePtr msgToSend();
+	
+    auto nowTime   = high_resolution_clock::now();
+    auto mseconds = duration_cast<milliseconds>(now - startTime).count();
+
+    std::cout << "millis: " << mseconds;
+	if(mseconds > 1000 && numHeartbeat < fIterations) 
 	{
-    	Send(parts, "broadcast", 0, 0);
+    	Send(msgToSend, "broadcast", 0, 0);
 		numHeartbeat++;
 		return true;
     }
