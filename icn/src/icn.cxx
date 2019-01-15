@@ -42,22 +42,25 @@ bool InformationControlNode::ConditionalRun()
     auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - startTime).count();
 
     std::cout << "millis: " << mseconds;
-	if(mseconds > 1000 && numHeartbeat < fIterations) 
+	if(mseconds > 1000 ) 
 	{
-        FairMQMessagePtr msgToSend(NewMessage(text.get(),
-                                    1,
-                                    [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                    text.get()));
-    	Send(msgToSend, "broadcast", 0, 0);
-		numHeartbeat++;
-		return true;
-    }
-    else
-    {
-    	LOG(trace) << "Done sending packets";
-    	LOG(trace) << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
-    	this_thread::sleep_for(chrono::milliseconds(20));
-    	return false;
+        if(numHeartbeat < fIterations){
+            LOG (trace) << "sending heartbeat";
+            FairMQMessagePtr msgToSend(NewMessage(text.get(),
+                                        1,
+                                        [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                        text.get()));
+            Send(msgToSend, "broadcast", 0, 0);
+            numHeartbeat++;
+            return true;
+        }else
+        {
+            LOG(trace) << "Done sending packets";
+            LOG(trace) << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
+            this_thread::sleep_for(chrono::milliseconds(20));
+            return false;
+        }
+        
     }
 	return true;
 }
