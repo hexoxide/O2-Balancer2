@@ -219,7 +219,7 @@ void FirstLineProccessing::get_epns () {
 						NULL);
 }
 
-bool FirstLineProcessor::HandleBroadcast(FairMQParts& msg, int /*index*/)
+bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
 {
     //listen to heartbeats)
     if(!epnsListChanged && listOfAvailableEpns.size() > 0){

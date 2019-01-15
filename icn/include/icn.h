@@ -28,7 +28,7 @@ class InformationControlNode : public FairMQDevice
     void ExitDevice(const State);
 
     uint64_t fIterations;
-    uint32_t rate;
+    uint64_t rate;
 
     // used to exit device
     const std::string stateChangeHook;

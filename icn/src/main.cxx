@@ -13,7 +13,7 @@ void addCustomOptions(bpo::options_description& options)
 {
     options.add_options()
     	("iterations", bpo::value<uint64_t>()->required(), "Number of iterations for the duration of the experiment"),
-        ("rate", bpo::value<uint32_t>()->required(), "frequency of messages per sec");
+        ("rate", bpo::value<uint64_t>()->required(), "frequency of messages per sec");
 }
 
 FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/)
