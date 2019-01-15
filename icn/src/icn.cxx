@@ -43,11 +43,11 @@ bool InformationControlNode::ConditionalRun()
     auto nowTime   = chrono::high_resolution_clock::now();
     auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - startTime).count();
 
-    std::cout << "millis: " << mseconds;
+    //std::cout << "millis: " << mseconds;
 	if(mseconds > timeBetween.count()) 
 	{
         if(numHeartbeat < fIterations){
-            LOG (trace) << "sending heartbeat";
+            LOG (trace) << "sending heartbeat: " << to_string(numHeartbeat);
             FairMQMessagePtr msgToSend(NewMessage(text.get(),
                                         1,
                                         [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
