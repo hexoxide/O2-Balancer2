@@ -44,7 +44,7 @@ bool InformationControlNode::ConditionalRun()
     auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - startTime).count();
 
     std::cout << "millis: " << mseconds;
-	if(mseconds > timeBetween) 
+	if(mseconds > timeBetween.count()) 
 	{
         if(numHeartbeat < fIterations){
             LOG (trace) << "sending heartbeat";
