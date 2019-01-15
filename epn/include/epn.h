@@ -3,8 +3,12 @@
 
 #include "FairMQDevice.h"
 
+/// Receives data from FLP's.
 /**
- * Receives messages from the FLP and determines if an ackownledgements should be send to the ICN.
+ * The Event Processing Node is responsible for receiving
+ * messages from the First Line Processors. Also determines if 
+ * an ackownledgements should be send to the Information 
+ * Controller Node.
  */
 class EventProcessingNode : public FairMQDevice
 {

@@ -7,6 +7,11 @@
 
 #include "FairMQDevice.h"
 
+/// Sends data to EPN's.
+/**
+ * The First Line Processor is responsible for sending data
+ * to the Event Processing Node.
+ */
 class FirstLineProcessor : public FairMQDevice
 {
   public:

@@ -19,6 +19,9 @@ InformationControlNode::InformationControlNode()
 {
 }
 
+/**
+ * @return Number of established channels.
+ */ 
 uint64_t InformationControlNode::getNumberOfChannels()
 {
 	return channels.size();
@@ -30,11 +33,17 @@ void InformationControlNode::InitTask()
 	// OnData("feedback", &InformationControlNode::HandleFeedback);
 }
 
+/**
+ * Does additional actions before the experiment.
+ */
 void InformationControlNode::PreRun()
 {
 	feedbackListener = thread(&InformationControlNode::ListenForFeedback, this);
 }
 
+/**
+ * Starts monitoring the experiment.
+ */
 bool InformationControlNode::ConditionalRun()
 {
 	FairMQParts parts;
@@ -90,8 +99,10 @@ bool InformationControlNode::ConditionalRun()
 			// s2->port = 5555;
 			void* data = channel;
 		    parts.AddPart(NewMessage(data, 
-		    						sizeof(O2Channel),
-		    						[](void* /*data*/, void* object) { /** delete static_cast<O2Channel*>(object); */ },
+		                            sizeof(O2Channel),
+		                            [](void* /*data*/, void* object) {
+		                                // delete static_cast<O2Channel*>(object);
+		                            },
 		                            channel));
 		}
 	}
@@ -123,6 +134,11 @@ bool InformationControlNode::ConditionalRun()
 	return true;
 }
 
+/**
+ * Does additional action after the experiment, Gives 
+ * information about the experiment through logs and 
+ * closes listeners.
+ */
 void InformationControlNode::PostRun()
 {
 	LOG(trace) << "Heartsbeats	" << numHeartbeat;
@@ -130,8 +146,9 @@ void InformationControlNode::PostRun()
 }
 
 /**
- * Determines the next appropriate channel the FLP should use to send data to the EPN
- * @return the desired channel
+ * Determines the next appropriate channel the FLP should use 
+ * to send data to the EPN.
+ * @return The desired channel.
  */
 uint64_t InformationControlNode::determineChannel()
 {
@@ -162,8 +179,9 @@ uint64_t InformationControlNode::determineChannel()
 }
 
 /**
- * Count the number of feedbacks from EPN's 
- * this can be used to determine the number of lost heartbeats
+ * Counts the number of feedbacks from EPN's. This can be used 
+ * to determine the number of lost heartbeats during the 
+ * experiment.
  */
 void InformationControlNode::ListenForFeedback()
 {

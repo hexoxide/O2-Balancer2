@@ -71,9 +71,10 @@ void EventProcessingNode::PreRun()
 }
 
 /**
- * Receives data from the FLP and determines if they were received in order and if an acknowledgement should be send.
- * @param msg the data send by the FLP broken up into individual parts.
- * @return if the handling of the data was successful
+ * Receives data from the FLP and determines if they were 
+ * received in order and if an acknowledgement should be send.
+ * @param msg The data send by the FLP, broken up into individual parts.
+ * @return Whenever the handling of the data was successful.
  */
 bool EventProcessingNode::HandleData(FairMQParts& msg, int index)
 {
@@ -122,6 +123,10 @@ bool EventProcessingNode::HandleData(FairMQParts& msg, int index)
     return true;
 }
 
+/**
+ * Does additional action after the experiment, Gives 
+ * information about the experiment through logs.
+ */ 
 void EventProcessingNode::PostRun()
 {
     LOG(trace) << "Number of out of orders  " << numOutOfOrder;

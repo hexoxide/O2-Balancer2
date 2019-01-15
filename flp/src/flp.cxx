@@ -19,6 +19,12 @@ FirstLineProcessor::FirstLineProcessor()
     OnData("broadcast", &FirstLineProcessor::HandleBroadcast);
 }
 
+/**
+ * Configures the node by updating its state and validating the 
+ * channel. Then sends the message to the channel.
+ * @param msg Data broken up into individual parts to be send.
+ * @return Whenever the process was successful.
+ */
 bool FirstLineProcessor::HandleBroadcast(FairMQParts& msg, int /*index*/)
 {
     bool isFirstMessagePart = true;
@@ -83,8 +89,8 @@ bool FirstLineProcessor::HandleBroadcast(FairMQParts& msg, int /*index*/)
 }
 
 /**
- * Handles the reinitialization to configure additional channels
- * after already having entered the run state.
+ * Handles the reinitialization to configure additional 
+ * channels after already having entered the run state.
  */
 void FirstLineProcessor::reinitialize()
 {
@@ -150,7 +156,8 @@ void FirstLineProcessor::InitTask()
 }
 
 /**
- * Called before going back into run state, ensures leaving reconfigureChannel state
+ * Called before going back into run state. Ensures leaving 
+ * the reconfigureChannel state.
  */
 void FirstLineProcessor::PreRun()
 {
