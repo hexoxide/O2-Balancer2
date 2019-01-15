@@ -52,6 +52,7 @@ bool InformationControlNode::ConditionalRun()
                                         text.get()));
             Send(msgToSend, "broadcast", 0, 0);
             numHeartbeat++;
+            startTime+=1000;
             return true;
         }else
         {
