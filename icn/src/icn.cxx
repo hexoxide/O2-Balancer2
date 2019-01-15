@@ -31,7 +31,7 @@ InformationControlNode::InformationControlNode()
 void InformationControlNode::InitTask()
 {
 	fIterations = fConfig->GetValue<uint64_t>("iterations");
-	fIterations = fConfig->GetValue<uint64_t>("rate");
+	//fIterations = fConfig->GetValue<uint64_t>("rate");
 	startTime = chrono::high_resolution_clock::now();
     text = unique_ptr<char[]>(new char[1]);
 }
