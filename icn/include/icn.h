@@ -38,6 +38,7 @@ class InformationControlNode : public FairMQDevice
     std::vector<O2Channel> channels;
     bool isConfigure;
     std::chrono::system_clock::time_point startTime;
+    std::chrono::milliseconds timeBetween;
 };
 
 #endif /* ICN_H */

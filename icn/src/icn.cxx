@@ -34,6 +34,8 @@ void InformationControlNode::InitTask()
 	//fIterations = fConfig->GetValue<uint64_t>("rate");
 	startTime = chrono::high_resolution_clock::now();
     text = unique_ptr<char[]>(new char[1]);
+    int rate = 60;
+    timeBetween = std::chrono::milliseconds(1000/rate); 
 }
 
 bool InformationControlNode::ConditionalRun()
@@ -42,7 +44,7 @@ bool InformationControlNode::ConditionalRun()
     auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - startTime).count();
 
     std::cout << "millis: " << mseconds;
-	if(mseconds > 1000 ) 
+	if(mseconds > timeBetween) 
 	{
         if(numHeartbeat < fIterations){
             LOG (trace) << "sending heartbeat";
@@ -52,7 +54,7 @@ bool InformationControlNode::ConditionalRun()
                                         text.get()));
             Send(msgToSend, "broadcast", 0, 0);
             numHeartbeat++;
-            startTime+=1000;
+            startTime+=timeBetween;
             return true;
         }else
         {
