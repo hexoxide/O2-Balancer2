@@ -222,25 +222,27 @@ void FirstLineProccessing::get_epns () {
 void FirstLineProccessing::ListenForBroadcast()
 {
     //listen to heartbeats)
-    FairMQParts msg;
+    LOG(trace) << "in my own loop";
     // If we have no messages do nothing
-    while(true){
-        if (Receive(msg, "broadcast") >= 0){
-            LOG(trace) << "received heartbeat!";
-            if(!epnsListChanged && listOfAvailableEpns.size() > 0){
-                if(currentChannel == listOfAvailableEpns.end()){
-                    currentChannel = listOfAvailableEpns.begin();
-                }
-                
-                FairMQMessagePtr msgsend(NewMessage(text.get(),
-                                                fTextSize,
-                                                [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                                text.get()));
+    while (CheckCurrentState(RUNNING))
+        FairMQParts msg;
+        if (Receive(msg, "broadcast") < 0) break;
 
-                Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
-                currentChannel++;
+        LOG(trace) << "received heartbeat!";
+        if(!epnsListChanged && listOfAvailableEpns.size() > 0){
+            if(currentChannel == listOfAvailableEpns.end()){
+                currentChannel = listOfAvailableEpns.begin();
             }
+            
+            FairMQMessagePtr msgsend(NewMessage(text.get(),
+                                            fTextSize,
+                                            [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                            text.get()));
+
+            Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
+            currentChannel++;
         }
+        
     }
 }
 
@@ -290,9 +292,8 @@ void FirstLineProccessing::PreRun()
     if(isReconfiguringChannels) {
         isReconfiguringChannels = false;
         UnsubscribeFromStateChange(stateChangeHook);
-    }else{
-        broadcastListener = thread(&FirstLineProccessing::ListenForBroadcast, this);
     }
+    broadcastListener = thread(&FirstLineProccessing::ListenForBroadcast, this);
 }
 
 bool FirstLineProccessing::ConditionalRun(){    
@@ -370,6 +371,10 @@ bool FirstLineProccessing::ConditionalRun(){
     return true;
 }
 
+void FirstLineProccessing::PostRun()
+{
+    broadcastListener.join();
+}
 
 FirstLineProccessing::~FirstLineProccessing()
 {

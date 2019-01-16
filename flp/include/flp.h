@@ -18,6 +18,7 @@ class FirstLineProccessing : public FairMQDevice
     void InitTask() override;
     void PreRun() override;
     bool ConditionalRun() override;
+    void PostRun() override;
 
     //bool HandleBroadcast(FairMQParts&, int);
     static void get_epn_data(const char *);
