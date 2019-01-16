@@ -293,11 +293,7 @@ void FirstLineProccessing::PreRun()
     }
 }
 
-bool FirstLineProccessing::ConditionalRun(){
-    LOG (trace) << "epnschanged:" << epnsChanged;
-    LOG (trace) << "numberOfNewEpns:" << numberOfNewEpns;
-    LOG (trace) << "numberOfNewEpnsRetrieved:" << numberOfNewEpnsRetrieved;
-    
+bool FirstLineProccessing::ConditionalRun(){    
     if(epnsChanged && (numberOfNewEpns == numberOfNewEpnsRetrieved)){
         LOG(trace) << "received all epns information";
         //this gets triggered when 1) the zookeeper watcher of the epn nodes gets triggerd,
