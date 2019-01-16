@@ -221,6 +221,7 @@ void FirstLineProccessing::get_epns () {
 
 bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
 {
+    LOG(trace) << "received heafrtbeat!";
     //listen to heartbeats)
     if(!epnsListChanged && listOfAvailableEpns.size() > 0){
         if(currentChannel == listOfAvailableEpns.end()){
