@@ -219,28 +219,27 @@ void FirstLineProccessing::get_epns () {
 						NULL);
 }
 
-bool FirstLineProccessing::ListenForBroadcast()
+void FirstLineProccessing::ListenForBroadcast()
 {
     LOG(trace) << "received heartbeat!";
     //listen to heartbeats)
     FairMQParts msg;
     // If we have no messages do nothing
-    if (Receive(msg, "broadcast") < 0) return true;
+    if (Receive(msg, "broadcast") => 0){
+        if(!epnsListChanged && listOfAvailableEpns.size() > 0){
+            if(currentChannel == listOfAvailableEpns.end()){
+                currentChannel = listOfAvailableEpns.begin();
+            }
+            
+            FairMQMessagePtr msgsend(NewMessage(text.get(),
+                                            fTextSize,
+                                            [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                            text.get()));
 
-    if(!epnsListChanged && listOfAvailableEpns.size() > 0){
-        if(currentChannel == listOfAvailableEpns.end()){
-            currentChannel = listOfAvailableEpns.begin();
+            Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
+            currentChannel++;
         }
-        
-        FairMQMessagePtr msgsend(NewMessage(text.get(),
-                                        fTextSize,
-                                        [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                        text.get()));
-
-        Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
-        currentChannel++;
     }
-    return true;
 }
 
 std::map<int, std::string> FirstLineProccessing::listOfAvailableEpns;
@@ -290,7 +289,7 @@ void FirstLineProccessing::PreRun()
         isReconfiguringChannels = false;
         UnsubscribeFromStateChange(stateChangeHook);
     }else{
-        broadcastListener = thread(&InformationControlNode::ListenForBroadcast, this);
+        broadcastListener = thread(&FirstLineProccessing::ListenForBroadcast, this);
     }
 }
 

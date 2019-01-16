@@ -48,7 +48,7 @@ class FirstLineProccessing : public FairMQDevice
     static std::map<int, std::string>::iterator currentChannel;
 
     void ListenForBroadcast();
-    std::thread broadcastkListener;
+    std::thread broadcastListener;
 };
 
 #endif /* FLP_H */
