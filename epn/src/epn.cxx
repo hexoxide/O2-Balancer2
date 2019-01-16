@@ -66,6 +66,7 @@ void EventProccessingNode::InitTask()
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
 bool EventProccessingNode::HandleData(FairMQMessagePtr& msg, int /*index*/)
 {
+    //message threshold, pure for debuging and logs
     if((amountOfBytesReceived % 1228800) < 100){
         LOG(info) << "Received message! length: " << to_string(msg->GetSize());
     }

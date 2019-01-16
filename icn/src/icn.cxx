@@ -22,7 +22,8 @@ InformationControlNode::InformationControlNode()
 	, numHeartbeat(0)
 	, channels()
 	, isConfigure(true)
-	, startTime()
+	, timeSinceLastIteration()
+    , startTime()
 {
 	
 	
@@ -32,6 +33,7 @@ void InformationControlNode::InitTask()
 {
 	fIterations = fConfig->GetValue<uint64_t>("iterations");
 	//fIterations = fConfig->GetValue<uint64_t>("rate");
+	timeSinceLastIteration = chrono::high_resolution_clock::now();
 	startTime = chrono::high_resolution_clock::now();
     text = unique_ptr<char[]>(new char[1]);
     rate = 60;
@@ -41,7 +43,7 @@ void InformationControlNode::InitTask()
 bool InformationControlNode::ConditionalRun()
 {	
     auto nowTime   = chrono::high_resolution_clock::now();
-    auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - startTime).count();
+    auto mseconds = chrono::duration_cast<chrono::milliseconds>(nowTime - timeSinceLastIteration).count();
 
     //std::cout << "millis: " << mseconds;
 	if(mseconds > timeBetween.count()) 
@@ -56,12 +58,13 @@ bool InformationControlNode::ConditionalRun()
                 LOG (trace) << "sending heartbeat: " << to_string(numHeartbeat);
             }
             numHeartbeat++;
-            startTime+=timeBetween;
+            timeSinceLastIteration+=timeBetween;
             return true;
         }else
         {
-            LOG(trace) << "Done sending packets";
-            LOG(trace) << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
+            LOG(trace) << "Done sending packets,";
+            LOG(trace) << "amount of packets: " << to_string(numHeartbeat);
+            LOG(trace) << "run time" << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
             this_thread::sleep_for(chrono::milliseconds(20));
             return false;
         }
