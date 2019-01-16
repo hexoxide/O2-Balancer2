@@ -225,7 +225,7 @@ void FirstLineProccessing::ListenForBroadcast()
     //listen to heartbeats)
     FairMQParts msg;
     // If we have no messages do nothing
-    if (Receive(msg, "broadcast") => 0){
+    if (Receive(msg, "broadcast") >= 0){
         if(!epnsListChanged && listOfAvailableEpns.size() > 0){
             if(currentChannel == listOfAvailableEpns.end()){
                 currentChannel = listOfAvailableEpns.begin();
