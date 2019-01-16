@@ -219,10 +219,14 @@ void FirstLineProccessing::get_epns () {
 						NULL);
 }
 
-bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
+bool FirstLineProccessing::ListenForBroadcast()
 {
-    LOG(trace) << "received heafrtbeat!";
+    LOG(trace) << "received heartbeat!";
     //listen to heartbeats)
+    FairMQParts msg;
+    // If we have no messages do nothing
+    if (Receive(msg, "broadcast") < 0) return true;
+
     if(!epnsListChanged && listOfAvailableEpns.size() > 0){
         if(currentChannel == listOfAvailableEpns.end()){
             currentChannel = listOfAvailableEpns.begin();
@@ -257,8 +261,9 @@ std::map<int, std::string>::iterator FirstLineProccessing::currentChannel = list
 
 FirstLineProccessing::FirstLineProccessing()
 {
-    OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
+    //OnData("broadcast", &FirstLineProccessing::HandleBroadcast);
 	zoo_set_debug_level(ZOO_LOG_LEVEL_DEBUG);
+    //TODO ondata mag neit samen met conditional run 
 
 	zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
 	if (!zh) {
@@ -284,6 +289,8 @@ void FirstLineProccessing::PreRun()
     if(isReconfiguringChannels) {
         isReconfiguringChannels = false;
         UnsubscribeFromStateChange(stateChangeHook);
+    }else{
+        broadcastListener = thread(&InformationControlNode::ListenForBroadcast, this);
     }
 }
 
