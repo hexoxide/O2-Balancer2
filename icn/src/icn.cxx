@@ -34,7 +34,7 @@ void InformationControlNode::InitTask()
 	//fIterations = fConfig->GetValue<uint64_t>("rate");
 	startTime = chrono::high_resolution_clock::now();
     text = unique_ptr<char[]>(new char[1]);
-    int rate = 60;
+    rate = 60;
     timeBetween = std::chrono::milliseconds(1000/rate); 
 }
 
@@ -47,12 +47,14 @@ bool InformationControlNode::ConditionalRun()
 	if(mseconds > timeBetween.count()) 
 	{
         if(numHeartbeat < fIterations){
-            LOG (trace) << "sending heartbeat: " << to_string(numHeartbeat);
             FairMQMessagePtr msgToSend(NewMessage(text.get(),
                                         1,
                                         [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
                                         text.get()));
             Send(msgToSend, "broadcast", 0, 0);
+            if((numHeartbeat % rate) ==0){
+                LOG (trace) << "sending heartbeat: " << to_string(numHeartbeat);
+            }
             numHeartbeat++;
             startTime+=timeBetween;
             return true;
