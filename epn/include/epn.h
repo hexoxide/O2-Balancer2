@@ -16,7 +16,7 @@ class EventProccessingNode : public FairMQDevice
 
   	uint64_t fNumFlp;
     std::string address;
-  	
+  	uint64_t amountOfBytesReceived;
   	uint64_t receivedMessages;
 
   private:
