@@ -227,8 +227,6 @@ void FirstLineProccessing::ListenForBroadcast()
     while (CheckCurrentState(RUNNING)){
         FairMQParts msg;
         if (Receive(msg, "broadcast") < 0) return;
-
-        LOG(trace) << "received heartbeat!";
         if(!epnsListChanged && listOfAvailableEpns.size() > 0){
             if(currentChannel == listOfAvailableEpns.end()){
                 currentChannel = listOfAvailableEpns.begin();
