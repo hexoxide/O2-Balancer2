@@ -64,7 +64,7 @@ bool InformationControlNode::ConditionalRun()
         {
             LOG(trace) << "Done sending packets,";
             LOG(trace) << "amount of packets: " << to_string(numHeartbeat);
-            LOG(trace) << "run time" << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
+            LOG(trace) << "run time (MS): " << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - startTime).count();
             this_thread::sleep_for(chrono::milliseconds(20));
             return false;
         }
