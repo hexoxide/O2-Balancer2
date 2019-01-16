@@ -224,7 +224,7 @@ void FirstLineProccessing::ListenForBroadcast()
     //listen to heartbeats)
     LOG(trace) << "in my own loop";
     // If we have no messages do nothing
-    while (CheckCurrentState(RUNNING))
+    while (CheckCurrentState(RUNNING)){
         FairMQParts msg;
         if (Receive(msg, "broadcast") < 0) return;
 
