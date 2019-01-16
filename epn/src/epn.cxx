@@ -53,7 +53,7 @@ void EventProccessingNode::InitTask()
 {
     char buffer[512];
 
-	zh = zookeeper_init("localhost:2181", watcher, 10000, 0, 0, 0);
+	zh = zookeeper_init("192.168.1.1:2181", watcher, 10000, 0, 0, 0);
 	if (!zh) {
 		//return errno;
 	}
