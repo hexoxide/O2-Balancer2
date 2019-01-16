@@ -221,23 +221,25 @@ void FirstLineProccessing::get_epns () {
 
 void FirstLineProccessing::ListenForBroadcast()
 {
-    LOG(trace) << "received heartbeat!";
     //listen to heartbeats)
     FairMQParts msg;
     // If we have no messages do nothing
-    if (Receive(msg, "broadcast") >= 0){
-        if(!epnsListChanged && listOfAvailableEpns.size() > 0){
-            if(currentChannel == listOfAvailableEpns.end()){
-                currentChannel = listOfAvailableEpns.begin();
-            }
-            
-            FairMQMessagePtr msgsend(NewMessage(text.get(),
-                                            fTextSize,
-                                            [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
-                                            text.get()));
+    while(true){
+        if (Receive(msg, "broadcast") >= 0){
+            LOG(trace) << "received heartbeat!";
+            if(!epnsListChanged && listOfAvailableEpns.size() > 0){
+                if(currentChannel == listOfAvailableEpns.end()){
+                    currentChannel = listOfAvailableEpns.begin();
+                }
+                
+                FairMQMessagePtr msgsend(NewMessage(text.get(),
+                                                fTextSize,
+                                                [](void* /*data*/, void* object) { /*delete static_cast<char*>(object); */ },
+                                                text.get()));
 
-            Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
-            currentChannel++;
+                Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
+                currentChannel++;
+            }
         }
     }
 }
