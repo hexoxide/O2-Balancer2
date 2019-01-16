@@ -236,6 +236,7 @@ bool FirstLineProccessing::HandleBroadcast(FairMQParts& msg, int /*index*/)
         Send(msgsend, to_string(currentChannel->first), 0, 0); // send async
         currentChannel++;
     }
+    return true;
 }
 
 std::map<int, std::string> FirstLineProccessing::listOfAvailableEpns;
