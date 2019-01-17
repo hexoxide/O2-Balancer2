@@ -3,7 +3,9 @@
 # Load balancer V2 for ALICE
 In collaboration with the Amsterdam University of Applied sciences and CERN a load balancer is being developed for the ALICE O2 project.
 
-## Operation
+## Description
+The master branch contains an implementation without zookeeper, and uses the icn to maintain the list of the epns and distributes the list to the flps. The zookeepertje branch [a relative link](/tree/zookeepertje) contains a robust round-robin whitelist implementation, that has autonomous flps that rely on zookeeper to distribute the online epns (the icn only sends a heartbeat to the flps).
+
 The balancer is build out of three parts each with its own purposes and characteristics. Running experiments should have atleast one of each parts running. The InformationControlNode (ICN) orchestrates the experiments and determines parameters such as durations & rate.
 
 * ICN
