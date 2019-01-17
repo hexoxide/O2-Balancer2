@@ -1,10 +1,11 @@
-[![travis](https://api.travis-ci.com/hexoxide/O2-Balancer2.svg?branch=master)](https://travis-ci.com/hexoxide/O2-Balancer2) [![codecov](https://codecov.io/gh/hexoxide/O2-Balancer2/branch/master/graph/badge.svg)](https://codecov.io/gh/hexoxide/O2-Balancer2)
+[![travis](https://api.travis-ci.com/hexoxide/O2-Balancer2.svg?branch=zookeepertje)](https://travis-ci.com/hexoxide/O2-Balancer2) [![codecov](https://codecov.io/gh/hexoxide/O2-Balancer2/branch/zookeepertje/graph/badge.svg)](https://codecov.io/gh/hexoxide/O2-Balancer2)
 
-# Load balancer V2 for ALICE
+# Load balancer V3 for ALICE - Zookeeper whitelist 
 In collaboration with the Amsterdam University of Applied sciences and CERN a load balancer is being developed for the ALICE O2 project.
 
-## Operation
-The balancer is build out of three parts each with its own purposes and characteristics. Running experiments should have atleast one of each parts running. The InformationControlNode (ICN) orchestrates the experiments and determines parameters such as durations & rate.
+## Description
+This zookeeper branch uses zookeeper to maintain which epn is online, the flp retrieves this list from zookeeper and uses the round robin to distribute the the load among these epns. The epn is very simple it creates a zookeeper node in the zooker /EPN/ directory and then whenever it goes offline the flp will be noticed (because it has a watcher placed on the /EPN/ node). It is a whitelist implementation beacause it maintains the list of online nodes, when the watcher notifies that a node has gone offline, the flp will remove the node from its list of available nodes. The round robin algorithm will then skip it until it comes back online.
+The ICN is very minimalistic: it only sends heartbeats at a certain channel (to which the flps connect). This is to mock the heartbeats that will be given to the flp by the sensors in the ALICE detector. 
 
 * ICN
 * FLP
@@ -35,27 +36,19 @@ make -j 2
 ```
 
 ## Running
-
+Example experiment run with 2 pi clusters (8 pi's):
+First "git checkout zookeepertje" on all nodes, and go to O2balancer2/build/ and run "make"
 ```bash
-./icn/icn --severity trace --verbosity high --id 1 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=1,address=tcp://*:5005 name=feedback,type=pull,method=bind,rateLogging=1,address=tcp://*:5000
-./flp/flp --severity trace --verbosity high --id 1 --bytes-per-message 2097152 --channel-config name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://localhost:5005
-./epn/epn --severity trace --verbosity high --id 1 --num-flp 10 --channel-config name=1,type=pull,method=bind,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=push,method=connect,address=tcp://localhost:5000
-```
+node 1:
+sudo /usr/share/zookeeper/bin/zkCli.sh start
+./icn/icn --severity trace --verbosity high --id 1 --iterations 6000 --rate 200 --channel-config name=broadcast,type=pub,method=bind,rateLogging=0,address=tcp://*:5005
 
-**Old method - Commit 718d37202da12e1100ba4493af8391f7c105b911**
+node 2 and 5:
+./flp/flp --severity trace --verbosity high --id 1 --channel-config name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://192.168.1.1:5005
 
-```bash
-./icn/icn --severity trace --verbosity high --id 1 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=1,address=tcp://*:5005 name=feedback,type=sub,method=bind,rateLogging=1,address=tcp://*:5000
-./flp/flp --severity trace --verbosity high --id 1 --rate 50 --bytes-per-message 2097152 --channel-config name=1,type=push,method=bind,address=tcp://*:5555,rateLogging=1 name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://localhost:5005
-./epn/epn --severity trace --verbosity high --id 1 --num-flp 10 --channel-config name=1,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=pub,method=connect,address=tcp://localhost:5000
-```
+node 3,4,6,7 and 8 (dit address is de nodes zijn eigen address)
+./epn/epn --severity trace --verbosity high --id 1 --channel-config name=1,type=pull,method=bind,address=tcp://192.168.1.x:5555,rateLogging=1
 
-**Old method - Commit 978c07854b038804073db5d7a927bdabf9292dd2**
-
-```bash
-./icn/icn --severity trace --verbosity veryhigh --id 1 --rate 50 --channel-config name=broadcast,type=pub,method=bind,rateLogging=1,address=tcp://*:5005 name=feedback,type=pull,method=bind,rateLogging=1,address=tcp://*:5000
-./flp/flp --severity trace --verbosity veryhigh --id 1 --rate 50 --bytes-per-message 2097152 --channel-config name=1,type=push,method=bind,address=tcp://*:5555,rateLogging=1 name=broadcast,type=sub,method=connect,rateLogging=1,address=tcp://localhost:5005
-./epn/epn --severity trace --verbosity veryhigh --id 1 --channel-config name=1,type=pull,method=connect,address=tcp://localhost:5555,rateLogging=1 name=feedback,type=push,method=connect,address=tcp://localhost:5000
 ```
 
 ## Debugging
