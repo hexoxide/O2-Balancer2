@@ -6,6 +6,7 @@ In collaboration with the Amsterdam University of Applied sciences and CERN a lo
 ## Description
 This zookeeper branch uses zookeeper to maintain which epn is online, the flp retrieves this list from zookeeper and uses the round robin to distribute the the load among these epns. The epn is very simple it creates a zookeeper node in the zooker /EPN/ directory and then whenever it goes offline the flp will be noticed (because it has a watcher placed on the /EPN/ node). It is a whitelist implementation beacause it maintains the list of online nodes, when the watcher notifies that a node has gone offline, the flp will remove the node from its list of available nodes. The round robin algorithm will then skip it until it comes back online.
 The ICN is very minimalistic: it only sends heartbeats at a certain channel (to which the flps connect). This is to mock the heartbeats that will be given to the flp by the sensors in the ALICE detector. 
+The FLP will be sending messages as soon as there is atleast 1 epn online and when there is 1 icn sending heartbeats.
 
 * ICN
 * FLP
