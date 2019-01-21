@@ -1,8 +1,12 @@
-#include "icn.h"
+/**
+ * 21-1-2019
+ * Geoffrey van Driessel
+ * geoffrey.v.d@live.nl
+ */
 
+#include "icn.h"
 #include <random>
 #include "o2data.h"
-
 #include <string.h>
 #include <errno.h>
 #include <string>

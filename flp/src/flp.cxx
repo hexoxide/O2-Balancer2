@@ -1,8 +1,12 @@
-#include "flp.h"
+/**
+ * 21-1-2019
+ * Geoffrey van Driessel
+ * geoffrey.v.d@live.nl
+ */
 
+#include "flp.h"
 #include "o2data.h"
 #include "o2channel.h"
-
 #include <string.h>
 #include <errno.h>
 #include <string>

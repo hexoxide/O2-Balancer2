@@ -1,5 +1,10 @@
-#include "epn.h"
+/**
+ * 21-1-2019
+ * Geoffrey van Driessel
+ * geoffrey.v.d@live.nl
+ */
 
+#include "epn.h"
 #include <string.h>
 #include <errno.h>
 #include <string>
